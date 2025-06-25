@@ -6,7 +6,7 @@ declare module "express-session" {
   interface SessionData {
     user: { username: string };
   }
-}
+} 
 
 export const register = async (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -53,11 +53,11 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const me = (req: Request, res: Response) => {
-  if (req.session.user) {
-    res.json(req.session.user.username);
+  if (!req.session.user) {
+    res.status(401).json({ message: "Not logged in" });
     return;
   }
-  res.status(401).json({ message: "Not logged in" });
+  res.json(req.session.user.username);
 };
 
 export const logout = (req: Request, res: Response) => {
@@ -69,3 +69,11 @@ export const logout = (req: Request, res: Response) => {
     res.json({ message: "Logout successful" });
   });
 };
+
+export const getSession = (req: Request, res: Response) => {
+  if (req.session.user) {
+    res.json({username: req.session.user});
+  } else {
+    res.status(401).json({message: "Not logged in"});
+  }
+}

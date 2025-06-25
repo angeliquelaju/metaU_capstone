@@ -6,7 +6,7 @@ declare module "express-session" {
   interface SessionData {
     user: { username: string };
   }
-}
+} 
 
 export const register = async (req: Request, res: Response) => {
   const { username, password } = req.body;

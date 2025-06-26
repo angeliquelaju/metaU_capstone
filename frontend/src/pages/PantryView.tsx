@@ -17,7 +17,7 @@ const PantryView = () => {
   return (
     <div className="fridge-view-container">
       <div className="fridge">
-        <button className="back-button" onClick={() => navigate("/Kitchen")}>
+        <button className="back-button" onClick={() => navigate("/kitchen")}>
           ← Back
         </button>
         <img src="/src/assets/pantry.png" alt="pantry" className="full-image" />

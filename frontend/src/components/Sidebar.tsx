@@ -3,37 +3,28 @@ import { FaHome, FaUser, FaUtensils } from "react-icons/fa";
 import { RiFridgeFill } from "react-icons/ri";
 
 const Sidebar = () => {
+  const getClassName = ({ isActive }: { isActive: boolean }) =>
+    isActive ? "active-link" : "";
+  
   return (
     <div className="sidebar">
-      <NavLink
-        to="/"
-        className={({ isActive }) => (isActive ? "active-link" : "")}
-      >
-        <FaHome className="icon"/>
+      <NavLink to="/" className={getClassName}>
+        <FaHome className="icon" />
         Home
       </NavLink>
 
-      <NavLink
-        to="/kitchen"
-        className={({ isActive }) => (isActive ? "active-link" : "")}
-      >
-        <RiFridgeFill className="icon"/>
+      <NavLink to="/kitchen" className={getClassName}>
+        <RiFridgeFill className="icon" />
         Kitchen
       </NavLink>
 
-      <NavLink
-        to="/recipes"
-        className={({ isActive }) => (isActive ? "active-link" : "")}
-      >
-        <FaUtensils className="icon"/>
+      <NavLink to="/recipes" className={getClassName}>
+        <FaUtensils className="icon" />
         Recipes
       </NavLink>
 
-      <NavLink
-        to="/profile"
-        className={({ isActive }) => (isActive ? "active-link" : "")}
-      >
-        <FaUser className="icon"/>
+      <NavLink to="/profile" className={getClassName}>
+        <FaUser className="icon" />
         Profile
       </NavLink>
     </div>

@@ -12,7 +12,7 @@ const FridgeView = () => {
   return (
     <div className="fridge-view-container">
       <div className="fridge">
-        <button className="back-button" onClick={() => navigate("/Kitchen")}>
+        <button className="back-button" onClick={() => navigate("/kitchen")}>
           ← Back
         </button>
         <img src="/src/assets/fridge.png" alt="fridge" className="full-image" />

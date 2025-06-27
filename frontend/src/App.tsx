@@ -39,7 +39,7 @@ function App() {
             path="/"
             element={
               <Home />
-            } /*{user ? <Navigate to="/profile" />: <Navigate to ="/login" />} */
+            } 
           />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
@@ -47,7 +47,7 @@ function App() {
             path="/kitchen"
             element={
               <Kitchen />
-            } /*{user ? <Fridge />: <Navigate to = "/login" />} */
+            } 
           />
           <Route path="/recipes" element={<Recipes />} />
           <Route

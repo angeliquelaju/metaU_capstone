@@ -1,32 +1,35 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useIngredients } from "../context/IngredientContext.tsx";
 
 const pantryItems = [
-  { name: "garlic", src: "/src/assets/garlic.png" },
-  { name: "saltPepper", src: "/src/assets/saltPepper.png" },
-];
+    {name: "garlic", src:"/src/assets/garlic.png", className:"garlic"},
+    {name: "saltPepper", src:"/src/assets/saltPepper.png", className:"saltPepper"}
+]
 
 const PantryView = () => {
-  const [selected, setSelected] = useState<string[]>([]);
   const navigate = useNavigate();
-  const handleSelect = (ingredient: string) => {
-    if (!selected.includes(ingredient)) {
-      setSelected([...selected, ingredient]);
+  const { selected, addIngredient, removeIngredient } = useIngredients();
+  const toggleIngredient = (ingredient: string) => {
+    if (selected.includes(ingredient)) {
+      removeIngredient(ingredient);
+    } else {
+      addIngredient(ingredient);
     }
   };
+
   return (
-    <div className="fridge-view-container">
+    <div className="ingredient-view-container">
       <div className="fridge">
         <button className="back-button" onClick={() => navigate("/kitchen")}>
           ← Back
         </button>
         <img src="/src/assets/pantry.png" alt="pantry" className="full-image" />
-        <button className="garlic" onClick={() => handleSelect("garlic")}>
-          <img src="/src/assets/garlic.png" alt="garlic" />
-        </button>
-        <button className="saltPepper" onClick={() => handleSelect("saltPepper")}>
-          <img src="/src/assets/saltPepper.png" alt="saltPepper" />
-        </button>
+        {pantryItems.map((item, index) => (
+            <button key={index} className={`fridge-item ${item.className}`}
+            onClick={() => toggleIngredient(item.name)}>
+                <img src = {item.src} alt={item.name} />
+            </button>
+        ))}
       </div>
       <div className="selected-ingredients-area">
         <h3>Selected</h3>
@@ -37,6 +40,7 @@ const PantryView = () => {
               src={`/src/assets/${item}.png`}
               alt={item}
               className="selected-ingredients"
+              onClick={() => removeIngredient(item)}
             />
           ))}
         </div>

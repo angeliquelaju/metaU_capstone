@@ -38,13 +38,13 @@ input {
   text-align: center;
 }
 
-/*fridge*/
 .page-container {
   position: relative;
   width: 100%;
   height: 100vh;
 }
 
+/*fridge*/
 .kitchen-image {
   width: 100%;
   height: 100%;
@@ -76,11 +76,10 @@ input {
   background: transparent;
 }
 
-.fridge-view-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
+.ingredient-view-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
 }
 
 .fridge {
@@ -129,7 +128,7 @@ input {
 
 .selected-ingredients-area {
   position: absolute;
-  top: 40px;
+  top: 60px;
   right: 40px;
   width: 150px;
   background-color: white;
@@ -138,6 +137,9 @@ input {
   border-radius: 8px;
 }
 
+.selected-ingredients-area h3 {
+  margin-top:0px;
+}
 .selected-grid {
   display: flex;
   flex-wrap: wrap;
@@ -146,8 +148,16 @@ input {
 }
 
 .selected-ingredients{
-  width: 40px;
+  margin-top: -10px;
+  width: 60px;
   height: auto;
+  cursor: pointer;
+  border-radius: 6px;
+  padding:5px;
+}
+
+.selected-ingredients:hover{
+  background-color:#f3f3f3;
 }
 
 /*ingredients*/

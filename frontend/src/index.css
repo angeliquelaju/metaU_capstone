@@ -4,6 +4,7 @@ body {
   padding:40px;
 }
 
+/*login*/
 .container {
   max-width: 400px;
   margin: auto;
@@ -31,20 +32,186 @@ input {
   border-radius: 4px;
 }
 
-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
 .error { 
   color: red;
   text-align: center;
+}
+
+/*fridge*/
+.page-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.kitchen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fridge-area, .pantry-area {
+  position: absolute;
+  background: transparent;
+  border: 2px dashed #4ade80;
+  cursor: pointer;
+}
+
+.fridge-area {
+  top: 25%;
+  left: 31.5%;
+  width: 17%;
+  height: 65%
+}
+
+.pantry-area {
+  bottom: 12%;
+  right: 40.5%;
+  width: 9%;
+  height: 20%
+}
+
+.fridge-area:hover, .pantry-area:hover {
+  background: transparent;
+}
+
+.fridge-view-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.fridge {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.full-image {
+  width: 100%;
+  display: block;
+}
+
+.chicken, .tomato, .onion, .lemon, .garlic, .saltPepper {
+  position: absolute;
+  background: transparent;
+  border: 1px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.chicken:hover img, .tomato:hover img, .onion:hover img, .lemon:hover img, .garlic:hover img, .saltPepper:hover img {
+  transform:scale(1.1)
+}
+
+.ingredient-image {
+  width: 50%;
+  height: auto;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #4CAF50;
+  border: 1px soid #ccc;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 16px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.selected-ingredients-area {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 150px;
+  background-color: white;
+  border: 2px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.selected-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap:8px;
+  margin-top: 10px;
+}
+
+.selected-ingredients{
+  width: 40px;
+  height: auto;
+}
+
+/*ingredients*/
+.chicken img {
+  width: 100px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.chicken {
+  bottom: 13%;
+  left: 33%;
+}
+
+.tomato img {
+  width: 80px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.tomato {
+  bottom: 41%;
+  left: 40%;
+}
+
+.onion img {
+  width: 75px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.onion {
+  top: 49%;
+  left: 31%;
+}
+
+.lemon img {
+  width: 80px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.lemon {
+  bottom: 40.5%;
+  left: 50%;
+}
+
+.garlic img {
+  width: 80px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.garlic {
+  bottom: 40%;
+  left: 41%;
+}
+
+.saltPepper img {
+  width: 100px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.saltPepper {
+  bottom: 40%;
+  left: 27%;
 }

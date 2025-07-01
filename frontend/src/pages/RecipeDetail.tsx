@@ -13,7 +13,7 @@ const RecipeDetail = () => {
       try {
         const apiKey = "c25d82b4400b4ec99e8dac172c6746d0";
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}&includeNutrition=true`
+          `https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}&includeNutrition=true`,
         );
         if (!res.ok) throw new Error("failed to fetch recipes");
         const data = await res.json();

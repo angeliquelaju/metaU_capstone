@@ -4,9 +4,9 @@ import prisma from "../prisma";
 
 declare module "express-session" {
   interface SessionData {
-    user: { username: string };
+    user?: { username: string };
   }
-} 
+}
 
 export const register = async (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -72,8 +72,8 @@ export const logout = (req: Request, res: Response) => {
 
 export const getSession = (req: Request, res: Response) => {
   if (req.session.user) {
-    res.json({username: req.session.user});
+    res.json({ username: req.session.user });
   } else {
-    res.status(401).json({message: "Not logged in"});
+    res.status(401).json({ message: "Not logged in" });
   }
-}
+};

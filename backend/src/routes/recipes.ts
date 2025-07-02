@@ -123,4 +123,131 @@ router.delete(
   },
 );
 
+router.post(
+  "/recipes/like",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const { id, title, image } = req.body;
+    const username = req.session.user?.username;
+    if (!username) {
+      res.status(401).json({ error: "not logged in" });
+      return;
+    }
+    try {
+      const user = await prisma.user.findUnique({
+        where: { username },
+      });
+      if (!user) {
+        res.status(404).json({ error: "user not found" });
+        return;
+      }
+      const alreadyLiked = await prisma.recipe.findFirst({
+        where: {
+          id,
+          userLikes: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+      });
+
+      if (alreadyLiked) {
+        res.status(409).json({ error: "recipe liked already" });
+        return;
+      }
+
+      const recipe = await prisma.recipe.upsert({
+        where: { id },
+        update: {},
+        create: { id, title, image },
+      });
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          liked: {
+            connect: { id: recipe.id },
+          },
+        },
+      });
+      res.status(200).json({ message: "recipe liked" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server error" });
+    }
+  },
+);
+
+router.delete(
+  "/recipes/unlike/:id",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const username = req.session.user?.username;
+    const { id } = req.params;
+    if (!username) {
+      res.status(401).json({ error: "not logged in" });
+      return;
+    }
+    try {
+      const user = await prisma.user.findUnique({
+        where: { username },
+      });
+      if (!user) {
+        res.status(404).json({ error: "user not found" });
+        return;
+      }
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          liked: {
+            disconnect: { id },
+          },
+        },
+      });
+      res.status(200).json({ message: "recipe unliked" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "internal error" });
+    }
+  },
+);
+
+router.get(
+  "/recipes/personalized",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const username = req.session.user?.username;
+    if (!username) {
+      res.status(401).json({ error: "not logged in" });
+      return;
+    }
+
+    try {
+      const userwithLike = await prisma.user.findUnique({
+        where: { username },
+        include: { liked: true },
+      });
+      if (!userwithLike || userwithLike.liked.length === 0) {
+        res.status(404).json({ error: "no liked recipes" });
+        return;
+      }
+      const topIngredients = userwithLike.liked
+        .flatMap((r) => r.title.split(" "))
+        .slice(0, 5)
+        .join(",");
+
+      const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
+      const response = await fetch(
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&includeIngredients=${topIngredients}&number=10`,
+      );
+      if (!response.ok) throw new Error("failed to get personalized recipes");
+      const data = await response.json();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server error" });
+    }
+  },
+);
+
 export default router;

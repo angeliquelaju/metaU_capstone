@@ -18,6 +18,7 @@ model User {
   username String @unique
   password String
   saved Recipe[] @relation("SavedRecipes")
+  liked Recipe[] @relation("LikedRecipes")
 }
 
 model Recipe {
@@ -25,4 +26,5 @@ model Recipe {
   title String
   image String
   userSaves User[] @relation("SavedRecipes")
+  userLikes User[] @relation("LikedRecipes")
 }

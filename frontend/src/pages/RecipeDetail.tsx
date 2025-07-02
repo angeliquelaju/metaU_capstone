@@ -4,20 +4,20 @@ import { useParams, useNavigate } from "react-router-dom";
 const RecipeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [recipe, setRecipes] = useState<any>(null);
+  const [recipe, setRecipe] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const apiKey = "c25d82b4400b4ec99e8dac172c6746d0";
+        const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
         const res = await fetch(
           `https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}&includeNutrition=true`,
         );
         if (!res.ok) throw new Error("failed to fetch recipes");
         const data = await res.json();
-        setRecipes(data);
+        setRecipe(data);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -64,24 +64,6 @@ const RecipeDetail = () => {
             {nutrient.unit}
           </li>
         ))}
-      </ul>
-
-      <h4>Diet</h4>
-      <ul>
-        {recipe.diet?.length > 0 ? (
-          recipe.diets.map((diet: string) => <li key={diet}>{diet}</li>)
-        ) : (
-          <p>no diet tags</p>
-        )}
-      </ul>
-
-      <h4>Dish Types</h4>
-      <ul>
-        {recipe.dishTypes?.length > 0 ? (
-          recipe.dishTypes.map((type: string) => <li key={type}>{type}</li>)
-        ) : (
-          <p>no types</p>
-        )}
       </ul>
     </div>
   );

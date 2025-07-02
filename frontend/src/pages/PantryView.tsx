@@ -56,6 +56,14 @@ const PantryView = () => {
             />
           ))}
         </div>
+        <button
+          className="fridge-button"
+          onClick={() => navigate("/fridge-view")}
+        ></button>
+        <button
+          className="recipe-button"
+          onClick={() => navigate("/recipes")}
+        ></button>
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useIngredients } from "../context/IngredientContext";
 import { useNavigate } from "react-router-dom";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
+import { FcLike } from "react-icons/fc";
+import { FaRegHeart } from "react-icons/fa6";
 
 const Recipes = () => {
   const { selected } = useIngredients();
@@ -11,6 +13,8 @@ const Recipes = () => {
   const navigate = useNavigate();
   const [count, setCount] = useState(8);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const MAX_MISSING_INGREDIENTS = 5;
+  const [likeIds, setLikeIDs] = useState<Set<string>>(new Set());
 
   const fetchSaved = async () => {
     try {
@@ -19,10 +23,27 @@ const Recipes = () => {
       });
       if (!res.ok) throw new Error("failed to get saved recipes");
       const data = await res.json();
-      const savedSet: Set<string> = new Set(data.map((r: any) => r.id.toString()));
+      const savedSet: Set<string> = new Set(
+        data.map((r: any) => r.id.toString()),
+      );
       setSavedIds(savedSet);
     } catch (err) {
       console.error("failed to load saved recipes", err);
+    }
+  };
+
+  const fetchLiked = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/recipes/liked", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      const likedSet: Set<string> = new Set(
+        data.map((r: any) => r.id.toString()),
+      );
+      setLikeIDs(likedSet);
+    } catch (err) {
+      console.error("failed to fetch liked recipes", err);
     }
   };
 
@@ -31,10 +52,10 @@ const Recipes = () => {
       if (selected.length === 0) return;
       setLoading(true);
       try {
-        const apiKey = "c25d82b4400b4ec99e8dac172c6746d0";
+        const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
         const query = selected.join(",");
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${query}&number=20&ranking=2&ignorePantry=false`
+          `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${query}&number=25&ranking=2&ignorePantry=false`,
         );
         if (!res.ok) throw new Error("failed to fetch recipes");
         const data = await res.json();
@@ -81,7 +102,7 @@ const Recipes = () => {
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
       if (res.ok) {
         setSavedIds((prev) => {
@@ -98,6 +119,46 @@ const Recipes = () => {
     }
   };
 
+  const handleLike = async (recipe: any) => {
+    const res = await fetch("http://localhost:4000/recipes/like", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: recipe.id.toString(),
+        title: recipe.title,
+        image: recipe.image,
+      }),
+    });
+    if (res.ok) {
+      setLikeIDs((prev) => new Set(prev).add(recipe.id.toString()));
+    }
+  };
+
+  const handleUnlike = async (recipeId: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:4000/recipes/unlike/${recipeId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+      if (res.ok) {
+        setLikeIDs((prev) => {
+          const updated = new Set(prev);
+          updated.delete(recipeId);
+          return updated;
+        });
+      } else {
+        const data = await res.json();
+        alert(data.error || "failed to unlike");
+      }
+    } catch (error) {
+      alert("something went wrong while liking");
+    }
+  };
+
   if (loading) return <p>Loading recipes</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -106,10 +167,14 @@ const Recipes = () => {
       <h2>Recipes Based on Ingredients Selected</h2>
       <div className="recipe-grid">
         {recipes
-          .filter((recipe: any) => recipe.missedIngredients.length <= 5)
+          .filter(
+            (recipe: any) =>
+              recipe.missedIngredients.length <= MAX_MISSING_INGREDIENTS,
+          )
           .slice(0, count)
           .map((recipe: any) => {
             const isSaved = savedIds.has(recipe.id.toString());
+            const isLiked = likeIds.has(recipe.id.toString());
             return (
               <div key={recipe.id} className="recipe-card">
                 <img
@@ -142,14 +207,30 @@ const Recipes = () => {
                     className="unsave-button"
                     onClick={() => handleUnsave(recipe.id.toString())}
                   >
-                  <FaBookmark />
+                    <FaBookmark />
                   </button>
                 ) : (
                   <button
                     className="save-button"
                     onClick={() => handleSave(recipe)}
                   >
-                  <FaRegBookmark />
+                    <FaRegBookmark />
+                  </button>
+                )}
+
+                {isLiked ? (
+                  <button
+                    className="unlike-button"
+                    onClick={() => handleUnlike(recipe.id.toString())}
+                  >
+                    <FcLike />
+                  </button>
+                ) : (
+                  <button
+                    className="like-button"
+                    onClick={() => handleLike(recipe)}
+                  >
+                    <FaRegHeart />
                   </button>
                 )}
               </div>

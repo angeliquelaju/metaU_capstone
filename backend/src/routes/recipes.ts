@@ -3,6 +3,7 @@ import requireAuth from "../middleware/requireAuth";
 import prisma from "../prisma";
 
 import "express-session";
+import { all } from "axios";
 declare module "express-session" {
   interface SessionData {
     user?: { username: string };
@@ -63,7 +64,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 router.get(
@@ -86,7 +87,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 router.delete(
@@ -120,14 +121,14 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 router.post(
   "/recipes/like",
   requireAuth,
   async (req: Request, res: Response) => {
-    const { id, title, image } = req.body;
+    const { id, title, image, ingredients } = req.body;
     const username = req.session.user?.username;
     if (!username) {
       res.status(401).json({ error: "not logged in" });
@@ -160,7 +161,7 @@ router.post(
       const recipe = await prisma.recipe.upsert({
         where: { id },
         update: {},
-        create: { id, title, image },
+        create: { id, title, image, ingredients },
       });
 
       await prisma.user.update({
@@ -176,7 +177,35 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  },
+  }
+);
+
+router.get(
+  "/recipes/likedRecipes",
+  requireAuth,
+  async (req: Request, res: Response) => {
+    const username = req.session.user?.username;
+    if (!username) {
+      res.status(401).json({ error: "not logged in" });
+      return;
+    }
+
+    try {
+      const userwithLiked = await prisma.user.findUnique({
+        where: { username },
+        include: { liked: true },
+      });
+      if (!userwithLiked) {
+        res.status(404).json({ error: "user not found" });
+        return;
+      }
+      res.status(200).json(userwithLiked.liked);
+      return;
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "internal error" });
+    }
+  }
 );
 
 router.delete(
@@ -210,7 +239,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 router.get(
@@ -232,22 +261,46 @@ router.get(
         res.status(404).json({ error: "no liked recipes" });
         return;
       }
-      const topIngredients = userwithLike.liked
-        .flatMap((r) => r.title.split(" "))
-        .slice(0, 5)
-        .join(",");
+
+      const allIngredients = userwithLike.liked.flatMap((r) => r.ingredients || []) 
+      console.log("user liked ingredients: ", allIngredients);
+
+      if (allIngredients.length === 0) {
+        res.status(400).json({error: "no recipes have been liked"});
+        return;
+      }
+
+      const tokens = allIngredients.flatMap((ing) => 
+        ing.toLowerCase().split(/\s+/)
+    );
+
+      const frequency: Record<string, number> = {};
+      for (const token of tokens) {
+        frequency[token] = (frequency[token] || 0) + 1;
+      }
+
+      const sorted = Object.entries(frequency).sort((a,b) => b[1]-a[1]);
+      const topIngredients = sorted.slice(0,5).map(([key]) => key).join(",");
+    //   const topIngredients = userwithLike.liked
+    //     .flatMap((r) => r.title.split(" "))
+    //     .slice(0, 5)
+    //     .join(",");
+
+      console.log("top ingredients: ", topIngredients);
 
       const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&includeIngredients=${topIngredients}&number=10`,
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&includeIngredients=${topIngredients}&number=10`
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();
+      console.log("personalized data: ", data);
+      res.json(data.results);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  },
+  }
 );
 
 export default router;

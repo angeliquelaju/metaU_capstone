@@ -34,7 +34,7 @@ const Recipes = () => {
 
   const fetchLiked = async () => {
     try {
-      const res = await fetch("http://localhost:4000/recipes/liked", {
+      const res = await fetch("http://localhost:4000/recipes/likedRecipes", {
         credentials: "include",
       });
       const data = await res.json();
@@ -61,6 +61,7 @@ const Recipes = () => {
         const data = await res.json();
         setRecipes(data);
         fetchSaved();
+        fetchLiked();
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -120,6 +121,10 @@ const Recipes = () => {
   };
 
   const handleLike = async (recipe: any) => {
+    const ingredients = recipe.usedIngredients
+    .concat(recipe.missedIngredients)
+    .map((ing: any) => ing.name);
+
     const res = await fetch("http://localhost:4000/recipes/like", {
       method: "POST",
       credentials: "include",
@@ -128,6 +133,7 @@ const Recipes = () => {
         id: recipe.id.toString(),
         title: recipe.title,
         image: recipe.image,
+        ingredients,
       }),
     });
     if (res.ok) {

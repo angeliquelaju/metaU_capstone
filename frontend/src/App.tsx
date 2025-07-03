@@ -12,6 +12,7 @@ import FridgeView from "./pages/FridgeView";
 import PantryView from "./pages/PantryView.tsx";
 import Sidebar from "./components/Sidebar.tsx";
 import RecipeDetail from "./pages/RecipeDetail.tsx";
+import Personalized from "./pages/Personalized.tsx";
 
 function App() {
   const [user, setUser] = useState<string | null>(null);
@@ -54,6 +55,7 @@ function App() {
           />
           <Route path="/fridge-view" element={<FridgeView />} />
           <Route path="/pantry-view" element={<PantryView />} />
+          <Route path="/personalized" element={<Personalized />} />
         </Routes>
       </main>
     </div>

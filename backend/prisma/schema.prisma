@@ -25,6 +25,7 @@ model Recipe {
   id String @id
   title String
   image String
+  ingredients String[] @default([])
   userSaves User[] @relation("SavedRecipes")
   userLikes User[] @relation("LikedRecipes")
 }

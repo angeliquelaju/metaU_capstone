@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { FaHome, FaUser, FaUtensils } from "react-icons/fa";
 import { RiFridgeFill } from "react-icons/ri";
+import { PiNotepadFill } from "react-icons/pi";
 
 const Sidebar = () => {
   const getClassName = ({ isActive }: { isActive: boolean }) =>
@@ -21,6 +22,11 @@ const Sidebar = () => {
       <NavLink to="/recipes" className={getClassName}>
         <FaUtensils className="icon" />
         Recipes
+      </NavLink>
+
+      <NavLink to="/personalized" className={getClassName}>
+        <PiNotepadFill className="icon"/>
+        Recs
       </NavLink>
 
       <NavLink to="/profile" className={getClassName}>

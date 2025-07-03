@@ -6,16 +6,17 @@ import { FcLike } from "react-icons/fc";
 import { FaRegHeart } from "react-icons/fa6";
 
 const Recipes = () => {
-  const { selected } = useIngredients();
+  const { selected } = useIngredients(); //selected ingredients from the kichen page
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [count, setCount] = useState(8);
+  const [count, setCount] = useState(8); //for loading more recipes
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const MAX_MISSING_INGREDIENTS = 5;
   const [likeIds, setLikeIDs] = useState<Set<string>>(new Set());
-
+  const MAX_MISSING_INGREDIENTS = 5;
+  
+  //fetching recipes users have saved to show up on their profile
   const fetchSaved = async () => {
     try {
       const res = await fetch("http://localhost:4000/recipes/user", {
@@ -32,6 +33,7 @@ const Recipes = () => {
     }
   };
 
+  //fetching recipes users have liked for personalized page
   const fetchLiked = async () => {
     try {
       const res = await fetch("http://localhost:4000/recipes/likedRecipes", {
@@ -47,6 +49,7 @@ const Recipes = () => {
     }
   };
 
+  //fetching recipes from API
   useEffect(() => {
     const fetchRecipes = async () => {
       if (selected.length === 0) return;
@@ -71,6 +74,7 @@ const Recipes = () => {
     fetchRecipes();
   }, [selected]);
 
+  //saving a recipe to that specific user's list
   const handleSave = async (recipe: any) => {
     try {
       const res = await fetch("http://localhost:4000/recipes/save", {
@@ -96,6 +100,7 @@ const Recipes = () => {
     }
   };
 
+  //unsave recipes
   const handleUnsave = async (recipeId: string) => {
     try {
       const res = await fetch(
@@ -120,6 +125,7 @@ const Recipes = () => {
     }
   };
 
+  //liking a recipe and sending their ingredients to the database
   const handleLike = async (recipe: any) => {
     const ingredients = recipe.usedIngredients
     .concat(recipe.missedIngredients)
@@ -141,6 +147,7 @@ const Recipes = () => {
     }
   };
 
+  //unlike recipe
   const handleUnlike = async (recipeId: string) => {
     try {
       const res = await fetch(
@@ -165,8 +172,11 @@ const Recipes = () => {
     }
   };
 
-  if (loading) return <p>Loading recipes</p>;
-  if (error) return <p>Error: {error}</p>;
+  if(!loading && selected.length === 0) {
+    return <p>please go to the Kitchen page and select ingredients</p>;
+  }
+  if (loading) return <p>loading recipes</p>;
+  if (error) return <p>error: {error}</p>;
 
   return (
     <div className="recipe-container">

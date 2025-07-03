@@ -10,6 +10,7 @@ declare module "express-session" {
   }
 }
 
+//saving recipes
 const router = Router();
 router.post(
   "/recipes/save",
@@ -67,6 +68,7 @@ router.post(
   }
 );
 
+//getting the recipes that have been saved by a user
 router.get(
   "/recipes/user",
   requireAuth,
@@ -90,6 +92,7 @@ router.get(
   }
 );
 
+//delete recipes that have been saved
 router.delete(
   "/recipes/remove/:id",
   requireAuth,
@@ -124,6 +127,7 @@ router.delete(
   }
 );
 
+//liking recipes
 router.post(
   "/recipes/like",
   requireAuth,
@@ -180,6 +184,7 @@ router.post(
   }
 );
 
+//getting the recipes that have been liked
 router.get(
   "/recipes/likedRecipes",
   requireAuth,
@@ -208,6 +213,7 @@ router.get(
   }
 );
 
+//unlike recipes
 router.delete(
   "/recipes/unlike/:id",
   requireAuth,
@@ -242,6 +248,7 @@ router.delete(
   }
 );
 
+//getting personalized recipes
 router.get(
   "/recipes/personalized",
   requireAuth,
@@ -262,6 +269,7 @@ router.get(
         return;
       }
 
+      //get ingredients from the liked recipes
       const allIngredients = userwithLike.liked.flatMap((r) => r.ingredients || []) 
       console.log("user liked ingredients: ", allIngredients);
 
@@ -270,6 +278,7 @@ router.get(
         return;
       }
 
+      //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) => 
         ing.toLowerCase().split(/\s+/)
     );

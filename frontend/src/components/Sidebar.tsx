@@ -25,7 +25,7 @@ const Sidebar = () => {
       </NavLink>
 
       <NavLink to="/personalized" className={getClassName}>
-        <PiNotepadFill className="icon"/>
+        <PiNotepadFill className="icon" />
         Recs
       </NavLink>
 

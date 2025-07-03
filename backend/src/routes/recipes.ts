@@ -281,10 +281,6 @@ router.get(
 
       const sorted = Object.entries(frequency).sort((a,b) => b[1]-a[1]);
       const topIngredients = sorted.slice(0,5).map(([key]) => key).join(",");
-    //   const topIngredients = userwithLike.liked
-    //     .flatMap((r) => r.title.split(" "))
-    //     .slice(0, 5)
-    //     .join(",");
 
       console.log("top ingredients: ", topIngredients);
 

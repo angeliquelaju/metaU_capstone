@@ -291,15 +291,12 @@ router.get(
       const sorted = Object.entries(frequency).sort((a,b) => b[1]-a[1]);
       const topIngredients = sorted.slice(0,5).map(([key]) => key).join(",");
 
-      console.log("top ingredients: ", topIngredients);
-
       const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
       const response = await fetch(
         `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&includeIngredients=${topIngredients}&number=10`
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();
-      console.log("personalized data: ", data);
       res.json(data.results);
     } catch (error) {
       console.error(error);

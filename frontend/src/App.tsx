@@ -11,6 +11,7 @@ import Recipes from "./pages/Recipes";
 import FridgeView from "./pages/FridgeView";
 import PantryView from "./pages/PantryView.tsx";
 import Sidebar from "./components/Sidebar.tsx";
+import RecipeDetail from "./pages/RecipeDetail.tsx";
 
 function App() {
   const [user, setUser] = useState<string | null>(null);
@@ -50,6 +51,7 @@ function App() {
             } 
           />
           <Route path="/recipes" element={<Recipes />} />
+          <Route path="/recipes/:id" element={<RecipeDetail />} />
           <Route
             path="/profile"
             element={

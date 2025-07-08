@@ -29,6 +29,16 @@ const Sidebar = () => {
         Recs
       </NavLink>
 
+      <NavLink to="/planner" className={getClassName}>
+        <PiNotepadFill className="icon" />
+        Meal Plan
+      </NavLink>
+
+      <NavLink to="/grocery" className={getClassName}>
+        <PiNotepadFill className="icon" />
+        Grocery List
+      </NavLink>
+
       <NavLink to="/profile" className={getClassName}>
         <FaUser className="icon" />
         Profile

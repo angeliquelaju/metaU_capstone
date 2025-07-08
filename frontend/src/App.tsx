@@ -13,6 +13,8 @@ import PantryView from "./pages/PantryView.tsx";
 import Sidebar from "./components/Sidebar.tsx";
 import RecipeDetail from "./pages/RecipeDetail.tsx";
 import Personalized from "./pages/Personalized.tsx";
+import MealPlanner from "./pages/MealPlanner.tsx";
+import GroceryList from "./pages/GroceryList.tsx";
 
 function App() {
   const [user, setUser] = useState<string | null>(null);
@@ -56,6 +58,8 @@ function App() {
           <Route path="/fridge-view" element={<FridgeView />} />
           <Route path="/pantry-view" element={<PantryView />} />
           <Route path="/personalized" element={<Personalized />} />
+          <Route path="/planner" element={<MealPlanner />} />
+          <Route path="/grocery" element={<GroceryList />} />
         </Routes>
       </main>
     </div>

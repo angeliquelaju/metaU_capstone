@@ -36,20 +36,10 @@ function App() {
       <Sidebar />
       <main className="main-content">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Home />
-            } 
-          />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/kitchen"
-            element={
-              <Kitchen />
-            } 
-          />
+          <Route path="/kitchen" element={<Kitchen />} />
           <Route path="/recipes" element={<Recipes />} />
           <Route path="/recipes/:id" element={<RecipeDetail />} />
           <Route

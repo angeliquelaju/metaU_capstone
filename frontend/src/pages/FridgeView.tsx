@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useIngredients } from "../context/IngredientContext.tsx";
 
 const fridgeItems = [
-    {name: "chicken", src:"/src/assets/chicken.png", className:"chicken"},
-    {name: "tomato", src:"/src/assets/tomato.png", className:"tomato"},
-    {name: "onion", src:"/src/assets/onion.png", className:"onion"},
-    {name: "lemon", src:"/src/assets/lemon.png", className:"lemon"},
+  { name: "chicken", src: "/src/assets/chicken.png", className: "chicken" },
+  { name: "tomato", src: "/src/assets/tomato.png", className: "tomato" },
+  { name: "onion", src: "/src/assets/onion.png", className: "onion" },
+  { name: "lemon", src: "/src/assets/lemon.png", className: "lemon" },
 ];
 
 const FridgeView = () => {
@@ -27,10 +27,13 @@ const FridgeView = () => {
         </button>
         <img src="/src/assets/fridge.png" alt="fridge" className="full-image" />
         {fridgeItems.map((item, index) => (
-            <button key={index} className={`fridge-item ${item.className}`}
-            onClick={() => toggleIngredient(item.name)}>
-                <img src = {item.src} alt={item.name} />
-            </button>
+          <button
+            key={index}
+            className={`fridge-item ${item.className}`}
+            onClick={() => toggleIngredient(item.name)}
+          >
+            <img src={item.src} alt={item.name} />
+          </button>
         ))}
       </div>
 

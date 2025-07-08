@@ -2,9 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { useIngredients } from "../context/IngredientContext.tsx";
 
 const pantryItems = [
-    {name: "garlic", src:"/src/assets/garlic.png", className:"garlic"},
-    {name: "saltPepper", src:"/src/assets/saltPepper.png", className:"saltPepper"}
-]
+  { name: "garlic", src: "/src/assets/garlic.png", className: "garlic" },
+  {
+    name: "salt",
+    src: "/src/assets/salt.png",
+    className: "salt",
+  },
+  {
+    name: "pepper",
+    src: "/src/assets/pepper.png",
+    className: "pepper",
+  },
+];
 
 const PantryView = () => {
   const navigate = useNavigate();
@@ -25,10 +34,13 @@ const PantryView = () => {
         </button>
         <img src="/src/assets/pantry.png" alt="pantry" className="full-image" />
         {pantryItems.map((item, index) => (
-            <button key={index} className={`fridge-item ${item.className}`}
-            onClick={() => toggleIngredient(item.name)}>
-                <img src = {item.src} alt={item.name} />
-            </button>
+          <button
+            key={index}
+            className={`fridge-item ${item.className}`}
+            onClick={() => toggleIngredient(item.name)}
+          >
+            <img src={item.src} alt={item.name} />
+          </button>
         ))}
       </div>
       <div className="selected-ingredients-area">

@@ -7,7 +7,7 @@ interface IngredientContextType {
 }
 
 const IngredientContext = createContext<IngredientContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const IngredientProvider = ({ children }: { children: ReactNode }) => {

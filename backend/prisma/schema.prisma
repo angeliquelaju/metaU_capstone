@@ -17,4 +17,12 @@ model User {
   id       Int    @id @default(autoincrement())
   username String @unique
   password String
+  saved Recipe[] @relation("SavedRecipes")
+}
+
+model Recipe {
+  id String @id
+  title String
+  image String
+  userSaves User[] @relation("SavedRecipes")
 }

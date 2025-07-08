@@ -5,7 +5,7 @@ import { RiFridgeFill } from "react-icons/ri";
 const Sidebar = () => {
   const getClassName = ({ isActive }: { isActive: boolean }) =>
     isActive ? "active-link" : "";
-  
+
   return (
     <div className="sidebar">
       <NavLink to="/" className={getClassName}>

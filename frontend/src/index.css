@@ -1,23 +1,23 @@
 body {
   font-family: sans-serif;
   margin: 0;
-  padding:40px;
-  margin-left: 120px
+  padding: 40px;
+  margin-left: 120px;
 }
 
 /*login*/
 .container {
-  max-width: 400px;
+  /* max-width: 400px; */
   margin: auto;
   padding: 32px;
   background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,1);
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 1); */
   border-radius: 8px;
 }
 
 h2 {
   text-align: center;
-  margin-bottom:24px;
+  margin-bottom: 24px;
   margin-top: 0px;
 }
 
@@ -33,7 +33,7 @@ input {
   border-radius: 4px;
 }
 
-.error { 
+.error {
   color: red;
   text-align: center;
 }
@@ -51,7 +51,8 @@ input {
   object-fit: cover;
 }
 
-.fridge-area, .pantry-area {
+.fridge-area,
+.pantry-area {
   position: absolute;
   background: transparent;
   border: 2px dashed #4ade80;
@@ -62,17 +63,18 @@ input {
   top: 25%;
   left: 31.5%;
   width: 17%;
-  height: 65%
+  height: 65%;
 }
 
 .pantry-area {
   bottom: 12%;
   right: 40.5%;
   width: 9%;
-  height: 20%
+  height: 20%;
 }
 
-.fridge-area:hover, .pantry-area:hover {
+.fridge-area:hover,
+.pantry-area:hover {
   background: transparent;
 }
 
@@ -94,7 +96,13 @@ input {
   display: block;
 }
 
-.chicken, .tomato, .onion, .lemon, .garlic, .saltPepper {
+.chicken,
+.tomato,
+.onion,
+.lemon,
+.garlic,
+.salt,
+.pepper {
   position: absolute;
   background: transparent;
   border: 1px;
@@ -102,8 +110,14 @@ input {
   padding: 0;
 }
 
-.chicken:hover img, .tomato:hover img, .onion:hover img, .lemon:hover img, .garlic:hover img, .saltPepper:hover img {
-  transform:scale(1.1)
+.chicken:hover img,
+.tomato:hover img,
+.onion:hover img,
+.lemon:hover img,
+.garlic:hover img,
+.salt:hover img,
+.pepper:hover img {
+  transform: scale(1.1);
 }
 
 .ingredient-image {
@@ -115,7 +129,7 @@ input {
   position: absolute;
   top: 20px;
   left: 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   border: 1px soid #ccc;
   padding: 8px 12px;
   cursor: pointer;
@@ -130,7 +144,7 @@ input {
   position: absolute;
   top: 60px;
   right: 40px;
-  width: 150px;
+  width: 200px;
   background-color: white;
   border: 2px solid #ddd;
   padding: 10px;
@@ -138,26 +152,26 @@ input {
 }
 
 .selected-ingredients-area h3 {
-  margin-top:0px;
+  margin-top: 0px;
 }
 .selected-grid {
   display: flex;
   flex-wrap: wrap;
-  gap:8px;
+  gap: 8px;
   margin-top: 10px;
 }
 
-.selected-ingredients{
+.selected-ingredients {
   margin-top: -10px;
-  width: 60px;
-  height: auto;
+  width: auto;
+  height: 55px;
   cursor: pointer;
   border-radius: 6px;
-  padding:5px;
+  padding: 5px;
 }
 
-.selected-ingredients:hover{
-  background-color:#f3f3f3;
+.selected-ingredients:hover {
+  background-color: #f3f3f3;
 }
 
 /*ingredients*/
@@ -216,13 +230,24 @@ input {
   left: 41%;
 }
 
-.saltPepper img {
-  width: 100px;
+.salt img {
+  width: 50px;
   height: auto;
   transition: transform 0.2s;
 }
 
-.saltPepper {
+.salt {
+  bottom: 40%;
+  left: 33%;
+}
+
+.pepper img {
+  width: 50px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.pepper {
   bottom: 40%;
   left: 27%;
 }
@@ -283,7 +308,7 @@ input {
   background-color: #fff;
   border: 1px solid #e2e2e2;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
   text-align: center;
   padding-bottom: 16px;
   overflow: hidden;
@@ -295,11 +320,11 @@ input {
 }
 
 .recipe-image {
-  margin-left:-10px;
-  width:290px;
+  margin-left: -10px;
+  width: 290px;
   height: auto;
   object-fit: cover;
-  border-radius:8px;
+  border-radius: 8px;
   display: block;
 }
 
@@ -342,4 +367,10 @@ input {
 
 .more-recipes-button:hover {
   background-color: #388e3c;
+}
+
+.unsave-button, .save-button {
+  background: transparent;
+  border: 0px;
+  font-size: 20px;
 }

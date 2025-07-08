@@ -36,7 +36,7 @@ const PantryView = () => {
         {pantryItems.map((item, index) => (
           <button
             key={index}
-            className={`fridge-item ${item.className}`}
+            className={`ingredient ${item.className}`}
             onClick={() => toggleIngredient(item.name)}
           >
             <img src={item.src} alt={item.name} />

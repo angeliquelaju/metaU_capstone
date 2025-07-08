@@ -7,11 +7,9 @@ body {
 
 /*login*/
 .container {
-  /* max-width: 400px; */
   margin: auto;
   padding: 32px;
   background: white;
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 1); */
   border-radius: 8px;
 }
 
@@ -96,13 +94,7 @@ input {
   display: block;
 }
 
-.chicken,
-.tomato,
-.onion,
-.lemon,
-.garlic,
-.salt,
-.pepper {
+.ingredient {
   position: absolute;
   background: transparent;
   border: 1px;
@@ -110,13 +102,7 @@ input {
   padding: 0;
 }
 
-.chicken:hover img,
-.tomato:hover img,
-.onion:hover img,
-.lemon:hover img,
-.garlic:hover img,
-.salt:hover img,
-.pepper:hover img {
+.ingredient:hover img{ 
   transform: scale(1.1);
 }
 

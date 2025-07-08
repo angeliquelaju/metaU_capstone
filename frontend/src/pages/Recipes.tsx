@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useIngredients } from "../context/IngredientContext";
 import RecipeCard from "../components/RecipeCard";
 import FilterModal from "../components/FilterModal";
@@ -94,6 +94,7 @@ const Recipes = () => {
       params.append("number", "25");
       params.append("addRecipeNutrition", "true");
       params.append("includeIngredients", selected.join(","));
+      params.append("instructionsRequired", "true");
 
       Object.entries(filters).forEach(([key, value]) => {
         if (value.trim()) {

@@ -1,8 +1,9 @@
-import { Router } from "express";
+import {Router} from "express";
 import prisma from "../prisma";
 import requireAuth from "../middleware/requireAuth";
 
 const router = Router();
+const SPOON_KEY = process.env.SPOON_KEY!;
 
 router.get("/meal-plan", requireAuth, async (req, res) => {
     const username = req.session.user?.username;
@@ -15,12 +16,41 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
             },
         },
     });
-    const plan = user?.mealPlans?.[0]?.plan;
+
+    const plan = user?.mealPlans?.[0];
     if (!plan) {
-        res.status(404).json({error: "no meal plan found"});
+        res.status(404).json({error: "no plan found"});
         return;
     }
-    res.json(plan);
-})
 
+    const nutrition = {
+        weekly: {calories: 0, protein: 0, carbs: 0},
+        daily: {} as Record<string, {calories: number; protein: number; carbs: number}>,
+    };
+
+    const days = plan.plan as {
+        day: string;
+        meals: {spoonacularId: number; title: string; servings: number}[];
+    }[];
+
+    for (const entry of days) {
+        let dailyTotal = {calories: 0, protein: 0, carbs: 0};
+
+        for (const meal of entry.meals) {
+            const info = await fetch(`https://api.spoonacular.com/recipes/${meal.spoonacularId}/nutritionWidget.json?apiKey=${SPOON_KEY}`);
+            const nutritionData = await info.json();
+            const servings = meal.servings || 1;
+
+            dailyTotal.calories += nutritionData.calories * servings;
+            dailyTotal.protein += parseFloat(nutritionData.protein) * servings;
+            dailyTotal.carbs += parseFloat(nutritionData.carbs) * servings;
+        }
+        nutrition.daily[entry.day] = dailyTotal;
+        nutrition.weekly.calories += dailyTotal.calories;
+        nutrition.weekly.protein += dailyTotal.protein;
+        nutrition.weekly.carbs += dailyTotal.carbs;
+    }
+    res.json({plan: days, nutrition});
+    return;
+});
 export default router;

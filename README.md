@@ -46,8 +46,3 @@ Stretch Goals
 - [ ] Dietary Restrictions Information
   - [ ] Save this information to the user's profile (ex vegetarian, gluten-free)
   - [ ] Makes sure all the recipes generated automatically has this dietary restriction followed
-- [ ] Meal Tracking
-  - [ ] Let users get their maintenance calories (so input height, weight, gender, physical activity) and is displayed in the profile page
-  - [ ] Add a "made it" button on recipes
-  - [ ] If the button is clicked, the daily calories decreases by the amount of calories the recipe has
-  - [ ] Calendar UI (aesthetics)

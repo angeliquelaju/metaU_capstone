@@ -292,6 +292,7 @@ input {
 
 .icon {
   font-size: 20px;
+  color: white;
 }
 
 /*recipe*/
@@ -369,7 +370,10 @@ input {
   background-color: #388e3c;
 }
 
-.unsave-button, .save-button {
+.unsave-button,
+.save-button,
+.like-button,
+.unlike-button {
   background: transparent;
   border: 0px;
   font-size: 20px;

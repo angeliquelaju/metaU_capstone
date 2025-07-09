@@ -26,6 +26,13 @@ export default function MealPlanner() {
     { title: string; spoonacularId: number; servings: number }[]
   >([]);
 
+  const [nutrition, setNutrition] = useState<any | null>(null);
+  const [goals, setGoals] = useState({
+    calories: 2000,
+    protein: 200,
+    carbs: 100,
+  });
+
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -52,7 +59,8 @@ export default function MealPlanner() {
         );
         if (planRes.ok) {
           const planData = await planRes.json();
-          setPlan(planData);
+          setPlan(planData.plan);
+          setNutrition(planData.nutrition)
         } else {
           setPlan(null);
         }
@@ -89,6 +97,58 @@ export default function MealPlanner() {
       <h2>meal planner</h2>
       {plan && !showPlanner ? (
         <>
+          {nutrition && (
+            <div className="nutrition-overview">
+              <h3>weekly nutrition</h3>
+              <p>
+                calories: {Math.round(nutrition.weekly.calories)} /{" "}
+                {goals.calories}{" "}
+                {nutrition.weekly.calories >= goals.calories
+                  ? "yes ✅"
+                  : " no ❌"}
+              </p>
+              <p>
+                protein: {Math.round(nutrition.weekly.protein)} /{" "}
+                {goals.protein}{" "}
+                {nutrition.weekly.protein >= goals.protein
+                  ? "yes ✅"
+                  : " no ❌"}
+              </p>
+              <p>
+                carbs: {Math.round(nutrition.weekly.carbs)} / {goals.carbs}{" "}
+                {nutrition.weekly.carbs >= goals.carbs ? "yes ✅" : " no ❌"}
+              </p>
+              <h4>set weekly goals:</h4>
+              <input
+                type="number"
+                value={goals.calories}
+                onChange={(e) =>
+                  setGoals({ ...goals, calories: +e.target.value })
+                }
+                placeholder="weekly calories"
+              />{" "}
+              kcal
+              <input
+                type="number"
+                value={goals.protein}
+                onChange={(e) =>
+                  setGoals({ ...goals, protein: +e.target.value })
+                }
+                placeholder="weekly protein"
+              />{" "}
+              g
+              <input
+                type="number"
+                value={goals.carbs}
+                onChange={(e) =>
+                  setGoals({ ...goals, carbs: +e.target.value })
+                }
+                placeholder="weekly carbs"
+              />{" "}
+              g
+            </div>
+          )}
+
           <div className="calendar">
             {plan.map((dayPlan: any) => (
               <div key={dayPlan.day} className="calendar-day">
@@ -106,6 +166,13 @@ export default function MealPlanner() {
                   ))
                 ) : (
                   <p className="empty-day">no meals</p>
+                )}
+                {nutrition?.daily?.[dayPlan.day] && (
+                  <small>
+                    {Math.round(nutrition.daily[dayPlan.day].calories)} kcal,{" "}
+                    {Math.round(nutrition.daily[dayPlan.day].protein)} g protein,{" "}
+                    {Math.round(nutrition.daily[dayPlan.day].carbs)} g carbs
+                  </small>
                 )}
               </div>
             ))}

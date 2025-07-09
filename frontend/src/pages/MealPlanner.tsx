@@ -12,8 +12,11 @@ const DAYS = [
 ];
 
 export default function MealPlanner() {
+  const [plan, setPlan] = useState<any | null>(null);
+  const [showPlanner, setShowPlanner] = useState(false);
   const [savedRecipes, setSavedRecipes] = useState<
-    {id: string; title: string}[]>([]);
+    { id: string; title: string }[]
+  >([]);
 
   const [mealCounts, setMealCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(DAYS.map((d) => [d, 3]))
@@ -28,22 +31,39 @@ export default function MealPlanner() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadSaved = async () => {
-        const res = await fetch("http://localhost:4000/recipes/user", {
+    const loadData = async () => {
+      try {
+        const [recipesRes, planRes] = await Promise.all([
+          fetch("http://localhost:4000/recipes/user", {
             credentials: "include",
-        });
-        const data = await res.json();
-        setSavedRecipes(data);
+          }),
+          fetch("http://localhost:4000/meal-plan", {
+            credentials: "include",
+          }),
+        ]);
+        const recipes = await recipesRes.json();
+        setSavedRecipes(recipes);
         setRecipePreferences(
-            data.map((r: any) => ({
-                title: r.title,
-                spoonacularId: parseInt(r.id),
-                servings: 1,
-            }))
+          recipes.map((r: any) => ({
+            title: r.title,
+            spoonacularId: parseInt(r.id),
+            servings: 1,
+          }))
         );
+        if (planRes.ok) {
+          const planData = await planRes.json();
+          setPlan(planData);
+        } else {
+          setPlan(null);
+        }
         setLoading(false);
+      } catch (error) {
+        console.error("error loading saved recipes or plan: ", error);
+        setPlan(null);
+        setLoading(false);
+      }
     };
-    loadSaved();
+    loadData();
   }, []);
 
   const handleGenerate = async () => {
@@ -62,51 +82,82 @@ export default function MealPlanner() {
     }
   };
 
-  if (loading) return <p>loading saved recipes...</p>
+  if (loading) return <p>loading saved recipes...</p>;
 
   return (
     <div>
       <h2>meal planner</h2>
-      <h3>meals per day</h3>
-      {DAYS.map((day) => (
-        <div key={day}>
-          {day}:{" "}
-          <input
-            type="number"
-            value={mealCounts[day]}
-            min={0}
-            max={6}
-            onChange={(e) =>
-              setMealCounts({ ...mealCounts, [day]: +e.target.value })
-            }
-          />
-        </div>
-      ))}
-
-      <h3>recipe preferences</h3>
-      {recipePreferences.length === 0 ? (
-        <p>no saved recipes</p>
+      {plan && !showPlanner ? (
+        <>
+          <div className="calendar">
+            {plan.map((dayPlan: any) => (
+              <div key={dayPlan.day} className="calendar-day">
+                <h3>{dayPlan.day}</h3>
+                {dayPlan.meals.length > 0 ? (
+                  dayPlan.meals.map((meal: any, idx: number) => (
+                    <div
+                      key={`${meal.spoonacularId}-${idx}`}
+                      className="calendar-meal"
+                      onClick={() => navigate(`/recipes/${meal.spoonacularId}`)}
+                    >
+                      {meal.title}{" "}
+                      {meal.servings > 1 ? `(x${meal.servings})` : ""}
+                    </div>
+                  ))
+                ) : (
+                  <p className="empty-day">no meals</p>
+                )}
+              </div>
+            ))}
+          </div>
+          <button onClick={() => setShowPlanner(true)}>
+            generate new plan
+          </button>
+        </>
       ) : (
-        recipePreferences.map((r, i) => (
-        <div key={r.spoonacularId}>
-          {r.title}: eat{" "}
-          <input
-            type="number"
-            value={r.servings}
-            min={0}
-            max={10}
-            onChange={(e) => {
-              const updated = [...recipePreferences];
-              updated[i].servings = +e.target.value;
-              setRecipePreferences(updated);
-            }}
-          />{" "}
-          times
-        </div>
-        ))
+        <>
+          <h3>meals per day</h3>
+          {DAYS.map((day) => (
+            <div key={day}>
+              {day}:{" "}
+              <input
+                type="number"
+                value={mealCounts[day]}
+                min={0}
+                max={6}
+                onChange={(e) =>
+                  setMealCounts({ ...mealCounts, [day]: +e.target.value })
+                }
+              />
+            </div>
+          ))}
+
+          <h3>recipe preferences</h3>
+          {recipePreferences.length === 0 ? (
+            <p>no saved recipes</p>
+          ) : (
+            recipePreferences.map((r, i) => (
+              <div key={r.spoonacularId}>
+                {r.title}: eat{" "}
+                <input
+                  type="number"
+                  value={r.servings}
+                  min={0}
+                  max={10}
+                  onChange={(e) => {
+                    const updated = [...recipePreferences];
+                    updated[i].servings = +e.target.value;
+                    setRecipePreferences(updated);
+                  }}
+                />{" "}
+                times
+              </div>
+            ))
+          )}
+          <button onClick={handleGenerate}>generate meal plan</button>
+          {message && <p>{message}</p>}
+        </>
       )}
-      <button onClick={handleGenerate}>generate meal plan</button>
-      {message && <p>{message}</p>}
     </div>
   );
 }

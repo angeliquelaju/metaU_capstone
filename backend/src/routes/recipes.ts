@@ -9,6 +9,7 @@ declare module "express-session" {
     user?: { username: string };
   }
 }
+const SPOON_KEY = process.env.SPOON_KEY!;
 
 //saving recipes
 const router = Router();
@@ -298,9 +299,8 @@ router.get(
 
       console.log("top ingredients: ", topIngredients);
 
-      const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&includeIngredients=${topIngredients}&number=10`,
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10`,
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();

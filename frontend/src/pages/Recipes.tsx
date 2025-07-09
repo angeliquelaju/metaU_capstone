@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useIngredients } from "../context/IngredientContext";
 import RecipeCard from "../components/RecipeCard";
 import FilterModal from "../components/FilterModal";
+const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
 
 const Recipes = () => {
   const { selected } = useIngredients(); //selected ingredients from the kichen page
@@ -62,10 +63,9 @@ const Recipes = () => {
     if (selected.length === 0) return;
     setLoading(true);
     try {
-      const apiKey = "a2b10d0858114401869726f80933ad86";
       const query = selected.join(",");
       const res = await fetch(
-        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${query}&number=25&ranking=2&ignorePantry=false`,
+        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOON_KEY}&ingredients=${query}&number=25&ranking=2&ignorePantry=false`,
       );
       if (!res.ok) throw new Error("failed to fetch recipes");
       const data = await res.json();
@@ -88,10 +88,9 @@ const Recipes = () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      const apiKey = "a2b10d0858114401869726f80933ad86";
-      params.append("apiKey", apiKey);
-      params.append("ranking", "2");
-      params.append("number", "25");
+      params.append("apiKey", `${process.env.SPOON_KEY}`);
+      params.append("ranking", "2"); //prioritizes minimizing missing ingredients first 
+      params.append("number", "25"); //maximum number of recipes to return
       params.append("addRecipeNutrition", "true");
       params.append("includeIngredients", selected.join(","));
       params.append("instructionsRequired", "true");

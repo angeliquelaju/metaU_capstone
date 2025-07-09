@@ -38,13 +38,23 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
 
         for (const meal of entry.meals) {
             const info = await fetch(`https://api.spoonacular.com/recipes/${meal.spoonacularId}/nutritionWidget.json?apiKey=${SPOON_KEY}`);
+            if (!info.ok) {
+                console.error("spoonacular failed: ", await info.text());
+                res.status(500).json({error:"failed to fetch nutrition"});
+                return;
+            }
             const nutritionData = await info.json();
             const servings = meal.servings || 1;
 
-            dailyTotal.calories += nutritionData.calories * servings;
-            dailyTotal.protein += parseFloat(nutritionData.protein) * servings;
-            dailyTotal.carbs += parseFloat(nutritionData.carbs) * servings;
+            const calories = parseInt(nutritionData.calories);
+            const protein = parseFloat(nutritionData.protein.replace("g", ""));
+            const carbs = parseFloat(nutritionData.carbs.replace("g", ""));
+
+            dailyTotal.calories += calories * servings;
+            dailyTotal.protein += protein * servings;
+            dailyTotal.carbs += carbs * servings;
         }
+
         nutrition.daily[entry.day] = dailyTotal;
         nutrition.weekly.calories += dailyTotal.calories;
         nutrition.weekly.protein += dailyTotal.protein;

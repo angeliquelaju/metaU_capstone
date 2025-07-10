@@ -23,10 +23,15 @@ router.post("/generate-plan", requireAuth, async (req, res) => {
     "sunday",
   ];
 
-  const expanded: { title: string; spoonacularId: number; servings: number }[] = [];
+  const expanded: { title: string; spoonacularId: number; servings: number }[] =
+    [];
   for (const r of recipePreferences) {
-    if (r.servings > 0) {
-        expanded.push({ title: r.title, spoonacularId: r.spoonacularId, servings: r.servings });
+    for (let i = 0; i < r.servings; i++) {
+      expanded.push({
+        title: r.title,
+        spoonacularId: r.spoonacularId,
+        servings: 1,
+      });
     }
   }
 
@@ -43,7 +48,8 @@ router.post("/generate-plan", requireAuth, async (req, res) => {
 
   for (const day of DAYS) {
     const mealCount = dailyMeals[day] || 0;
-    const meals: { title: string; spoonacularId: number; servings: number }[] = [];
+    const meals: { title: string; spoonacularId: number; servings: number }[] =
+      [];
     for (let m = 0; m < mealCount; m++) {
       if (index >= expanded.length) break;
       meals.push(expanded[index]);

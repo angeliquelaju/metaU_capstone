@@ -14,6 +14,7 @@ const DAYS = [
 export default function MealPlanner() {
   const [plan, setPlan] = useState<any | null>(null);
   const [showPlanner, setShowPlanner] = useState(false);
+  const [planHistory, setPlanHistory] = useState<any[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<
     { id: string; title: string }[]
   >([]);
@@ -40,7 +41,7 @@ export default function MealPlanner() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [recipesRes, planRes, goalsRes] = await Promise.all([
+        const [recipesRes, planRes, goalsRes, historyRes] = await Promise.all([
           fetch("http://localhost:4000/recipes/user", {
             credentials: "include",
           }),
@@ -50,11 +51,16 @@ export default function MealPlanner() {
           fetch("http://localhost:4000/user/goals", {
             credentials: "include",
           }),
+          fetch("http://localhost:4000/meal-plan/history", {
+            credentials: "include",
+          }),
         ]);
         const recipes = await recipesRes.json();
         const goalsData = await goalsRes.json();
+        const historyData = await historyRes.json();
         setSavedRecipes(recipes);
         setGoals(goalsData);
+        setPlanHistory(historyData);
         setRecipePreferences(
           recipes.map((r: any) => ({
             title: r.title,
@@ -149,7 +155,8 @@ export default function MealPlanner() {
                 placeholder="weekly carbs"
               />{" "}
               g
-              <button className="saveGoals-button"
+              <button
+                className="saveGoals-button"
                 onClick={async () => {
                   await fetch("http://localhost:4000/user/goals", {
                     method: "POST",
@@ -199,6 +206,97 @@ export default function MealPlanner() {
         </>
       ) : (
         <>
+          {planHistory.length > 0 && (
+            <>
+              <h4>use previous plan</h4>
+              <select
+                onChange={(e) => {
+                  const selectedPlan = planHistory.find(
+                    (p) => p.id === +e.target.value
+                  );
+                  if (!selectedPlan) return;
+
+                  const parsedPlan = selectedPlan.plan as {
+                    day: string;
+                    meals: {
+                      title: string;
+                      spoonacularId: number;
+                      servings: number;
+                    }[];
+                  }[];
+
+                  const dayMealCounts: Record<string, number> = {};
+                  for (const day of DAYS) {
+                    dayMealCounts[day] =
+                      parsedPlan.find((d) => d.day === day)?.meals.length || 0;
+                  }
+                  setMealCounts(dayMealCounts);
+
+                  const recipeMap = new Map<
+                    number,
+                    { title: string; servings: number }
+                  >();
+                  for (const day of parsedPlan) {
+                    for (const meal of day.meals) {
+                      const existing = recipeMap.get(meal.spoonacularId);
+                      if (existing) {
+                        existing.servings += meal.servings;
+                      } else {
+                        recipeMap.set(meal.spoonacularId, {
+                          title: meal.title,
+                          servings: meal.servings,
+                        });
+                      }
+                    }
+                  }
+                  const populatePreferences: {
+                    title: string;
+                    spoonacularId: number;
+                    servings: number;
+                  }[] = [];
+
+                  for (const r of savedRecipes) {
+                    const id = parseInt(r.id);
+                    const match = recipeMap.get(id);
+                    populatePreferences.push({
+                      title: r.title,
+                      spoonacularId: id,
+                      servings: match ? match.servings : 0,
+                    });
+                    recipeMap.delete(id);
+                  }
+
+                  for (const [id, { title, servings }] of recipeMap.entries()) {
+                    populatePreferences.push({
+                      title, spoonacularId: id, servings});
+                    }
+                  setRecipePreferences(populatePreferences);
+                }}
+              >
+                <option value="">pick a previous plan</option>
+                {planHistory.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    created at {new Date(p.weekStart).toLocaleDateString()}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => {
+                  setMealCounts(Object.fromEntries(DAYS.map((d) => [d, 3])));
+                  setRecipePreferences(
+                    savedRecipes.map((r) => ({
+                      title: r.title,
+                      spoonacularId: parseInt(r.id),
+                      servings: 1,
+                    }))
+                  );
+                }}
+              >
+                clear
+              </button>
+            </>
+          )}
           <h3>meals per day</h3>
           {DAYS.map((day) => (
             <div key={day}>

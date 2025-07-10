@@ -30,13 +30,14 @@ router.get("/grocery", requireAuth, async (req, res) => {
     meals: { spoonacularId: number; servings: number }[];
   }[];
 
-  const grouped: Record<
+  //organize the ingredients by aisle groups ex. produce
+  const groupedIngredients: Record<
     string,
     Record<string, { amount: number; unit: string }>
   > = {};
 
-  for (const planEntry of plan) {
-    for (const meal of planEntry.meals) {
+  for (const day of plan) {
+    for (const meal of day.meals) {
       const id = meal.spoonacularId;
       const userServings = meal.servings ?? 1;
       const response = await fetch(
@@ -46,24 +47,29 @@ router.get("/grocery", requireAuth, async (req, res) => {
 
       const recipeServings = data.servings || 1;
       const multiplier = userServings / recipeServings;
+
+      //looping through all the ingredients in the recipe
       for (const ing of data.extendedIngredients) {
-        const key = ing.nameClean?.toLowerCase() || ing.name.toLowerCase();
+        const name = ing.nameClean?.toLowerCase() || ing.name.toLowerCase();
         const aisle = ing.aisle || "other";
-        const amount = ing.amount || 1;
+        const originalAmount = ing.amount || 1;
         const unit = ing.unit || "unit";
-        const adjustedAmount = amount * multiplier;
+        const adjustedAmount = originalAmount * multiplier;
 
-        if (!grouped[aisle]) grouped[aisle] = {};
+        //create an aisle group object if it does not exist
+        if (!groupedIngredients[aisle]) groupedIngredients[aisle] = {};
 
-        if (!grouped[aisle][key]) {
-          grouped[aisle][key] = { amount: 0, unit };
+        //create an ingredient obect in aisle group if it does not exist
+        if (!groupedIngredients[aisle][name]) {
+          groupedIngredients[aisle][name] = { amount: 0, unit };
         }
-        grouped[aisle][key].amount += adjustedAmount;
+        groupedIngredients[aisle][name].amount += adjustedAmount;
       }
     }
   }
 
-  const output = Object.entries(grouped).map(([category, ingredients]) => ({
+  //converting grouped ingredients into an array format
+  const output = Object.entries(groupedIngredients).map(([category, ingredients]) => ({
     category,
     ingredients: Object.entries(ingredients).map(
       ([name, { amount, unit }]) => ({

@@ -6,7 +6,8 @@ const router = Router();
 const SPOON_KEY = process.env.SPOON_KEY!;
 
 router.get("/meal-plan", requireAuth, async (req, res) => {
-    const username = req.session.user?.username;
+    try{
+        const username = req.session.user?.username;
     const user = await prisma.user.findUnique({
         where: {username},
         include: {
@@ -61,6 +62,9 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
         nutrition.weekly.carbs += dailyTotal.carbs;
     }
     res.json({plan: days, nutrition});
-    return;
+    } catch (err) {
+        console.error("error in /meal-plan: ", err);
+        res.status(500).json({error: "something went wrongin meal-plan"})
+    }
 });
 export default router;

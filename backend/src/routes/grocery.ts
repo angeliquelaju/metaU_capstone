@@ -6,7 +6,8 @@ const router = Router();
 const SPOON_KEY = process.env.SPOON_KEY!;
 
 router.get("/grocery", requireAuth, async (req, res) => {
-  const username = req.session.user?.username;
+  try {
+    const username = req.session.user?.username;
   const user = await prisma.user.findUnique({
     where: { username },
     include: {
@@ -73,5 +74,10 @@ router.get("/grocery", requireAuth, async (req, res) => {
     ),
   }));
   res.json(output);
+  } catch (err) {
+    console.error("error in /grocery: ", err);
+    res.status(500).json({error: "something went wrong in grocery"})
+  }
+  
 });
 export default router;

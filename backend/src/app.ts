@@ -2,6 +2,8 @@ import express from "express";
 import session from "express-session";
 import authRoutes from "./routes/auth";
 import recipeRoutes from "./routes/recipes";
+import generatePlanRoutes from "./routes/generatePlan"
+import groceryRoutes from "./routes/grocery"
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -29,5 +31,7 @@ app.use(
 
 app.use(authRoutes);
 app.use(recipeRoutes);
+app.use(generatePlanRoutes);
+app.use(groceryRoutes);
 
 export default app;

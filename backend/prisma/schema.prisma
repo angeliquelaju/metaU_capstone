@@ -19,6 +19,7 @@ model User {
   password String
   saved Recipe[] @relation("SavedRecipes")
   liked Recipe[] @relation("LikedRecipes")
+  mealPlans MealPlan[]
 }
 
 model Recipe {
@@ -28,4 +29,13 @@ model Recipe {
   ingredients String[] @default([])
   userSaves User[] @relation("SavedRecipes")
   userLikes User[] @relation("LikedRecipes")
+}
+
+model MealPlan {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  weekStart DateTime
+  plan Json
+  createdAt DateTime @default(now())
 }

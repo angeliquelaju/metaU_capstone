@@ -23,7 +23,7 @@ const Personalized = () => {
         if (!res.ok) {
           const errData = await res.json();
           throw new Error(
-            errData.error || "failed to fetch personalized recipes"
+            errData.error || "failed to fetch personalized recipes",
           );
         }
 

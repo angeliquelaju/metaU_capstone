@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useIngredients } from "../context/IngredientContext";
-import { useNavigate } from "react-router-dom";
-import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { FcLike } from "react-icons/fc";
-import { FaRegHeart } from "react-icons/fa6";
+import RecipeCard from "../components/RecipeCard";
+import FilterModal from "../components/FilterModal";
 
 const Recipes = () => {
   const { selected } = useIngredients(); //selected ingredients from the kichen page
+
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   const [count, setCount] = useState(8); //for loading more recipes
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [likeIds, setLikeIDs] = useState<Set<string>>(new Set());
+  const [showModal, setShowModal] = useState(false);
+  const [filters, setFilters] = useState({
+    maxReadyTime: "",
+    minProtein: "",
+    maxProtein: "",
+    minCarbs: "",
+    maxCarbs: "",
+    minCalories: "",
+    maxCalories: "",
+  });
   const MAX_MISSING_INGREDIENTS = 5;
-  
+
   //fetching recipes users have saved to show up on their profile
   const fetchSaved = async () => {
     try {
@@ -49,30 +57,61 @@ const Recipes = () => {
     }
   };
 
-  //fetching recipes from API
+  //fetch recipe list (default before filters)
+  const fetchByIngredients = async () => {
+    if (selected.length === 0) return;
+    setLoading(true);
+    try {
+      const apiKey = "a2b10d0858114401869726f80933ad86";
+      const query = selected.join(",");
+      const res = await fetch(
+        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${query}&number=25&ranking=2&ignorePantry=false`,
+      );
+      if (!res.ok) throw new Error("failed to fetch recipes");
+      const data = await res.json();
+      setRecipes(data);
+      fetchSaved();
+      fetchLiked();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchRecipes = async () => {
-      if (selected.length === 0) return;
-      setLoading(true);
-      try {
-        const apiKey = "6883c7a59696409ba35b059d9d5b08e1";
-        const query = selected.join(",");
-        const res = await fetch(
-          `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${query}&number=25&ranking=2&ignorePantry=false`,
-        );
-        if (!res.ok) throw new Error("failed to fetch recipes");
-        const data = await res.json();
-        setRecipes(data);
-        fetchSaved();
-        fetchLiked();
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRecipes();
+    fetchByIngredients();
   }, [selected]);
+
+  const applyFilters = async () => {
+    if (selected.length === 0) return;
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      const apiKey = "a2b10d0858114401869726f80933ad86";
+      params.append("apiKey", apiKey);
+      params.append("ranking", "2");
+      params.append("number", "25");
+      params.append("addRecipeNutrition", "true");
+      params.append("includeIngredients", selected.join(","));
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value.trim()) {
+          params.append(key, value.trim());
+        }
+      });
+      const res = await fetch(
+        `https://api.spoonacular.com/recipes/complexSearch?${params.toString()}`,
+      );
+      if (!res.ok) throw new Error("failed to apply filters");
+      const data = await res.json();
+      setRecipes(data.results || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   //saving a recipe to that specific user's list
   const handleSave = async (recipe: any) => {
@@ -128,8 +167,8 @@ const Recipes = () => {
   //liking a recipe and sending their ingredients to the database
   const handleLike = async (recipe: any) => {
     const ingredients = recipe.usedIngredients
-    .concat(recipe.missedIngredients)
-    .map((ing: any) => ing.name);
+      .concat(recipe.missedIngredients)
+      .map((ing: any) => ing.name);
 
     const res = await fetch("http://localhost:4000/recipes/like", {
       method: "POST",
@@ -172,7 +211,7 @@ const Recipes = () => {
     }
   };
 
-  if(!loading && selected.length === 0) {
+  if (!loading && selected.length === 0) {
     return <p>please go to the Kitchen page and select ingredients</p>;
   }
   if (loading) return <p>loading recipes</p>;
@@ -181,75 +220,44 @@ const Recipes = () => {
   return (
     <div className="recipe-container">
       <h2>Recipes Based on Ingredients Selected</h2>
+
+      <button onClick={() => setShowModal(true)}>filter</button>
+      {showModal && (
+        <FilterModal
+          filters={filters}
+          setFilters={setFilters}
+          onClose={() => setShowModal(false)}
+          onApply={() => {
+            applyFilters();
+            setShowModal(false);
+          }}
+        />
+      )}
+
       <div className="recipe-grid">
         {recipes
           .filter(
             (recipe: any) =>
+              !recipe.missedIngredients ||
               recipe.missedIngredients.length <= MAX_MISSING_INGREDIENTS,
           )
           .slice(0, count)
           .map((recipe: any) => {
             const isSaved = savedIds.has(recipe.id.toString());
             const isLiked = likeIds.has(recipe.id.toString());
+            const showNutrition = !!recipe.nutrition;
             return (
-              <div key={recipe.id} className="recipe-card">
-                <img
-                  src={recipe.image}
-                  alt={recipe.title}
-                  className="recipe-image"
-                />
-                <h3 className="recipe-title">{recipe.title}</h3>
-                {recipe.missedIngredients.length > 0 ? (
-                  <p className="missing-ingredients">
-                    Missing:{" "}
-                    {recipe.missedIngredients
-                      .map((item: any) => item.name)
-                      .join(", ")}
-                  </p>
-                ) : (
-                  <p className="missing-ingredients">
-                    You have all the ingredients!
-                  </p>
-                )}
-                <button
-                  className="view-button"
-                  onClick={() => navigate(`/recipes/${recipe.id}`)}
-                >
-                  View Recipe
-                </button>
-
-                {isSaved ? (
-                  <button
-                    className="unsave-button"
-                    onClick={() => handleUnsave(recipe.id.toString())}
-                  >
-                    <FaBookmark />
-                  </button>
-                ) : (
-                  <button
-                    className="save-button"
-                    onClick={() => handleSave(recipe)}
-                  >
-                    <FaRegBookmark />
-                  </button>
-                )}
-
-                {isLiked ? (
-                  <button
-                    className="unlike-button"
-                    onClick={() => handleUnlike(recipe.id.toString())}
-                  >
-                    <FcLike />
-                  </button>
-                ) : (
-                  <button
-                    className="like-button"
-                    onClick={() => handleLike(recipe)}
-                  >
-                    <FaRegHeart />
-                  </button>
-                )}
-              </div>
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                isSaved={isSaved}
+                isLiked={isLiked}
+                onSave={() => handleSave(recipe)}
+                onUnsave={() => handleUnsave(recipe.id.toString())}
+                onLike={() => handleLike(recipe)}
+                onUnlike={() => handleUnlike(recipe.id.toString())}
+                showNutrition={showNutrition}
+              />
             );
           })}
         {count < recipes.length && (

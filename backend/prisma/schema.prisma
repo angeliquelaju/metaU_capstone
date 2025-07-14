@@ -20,6 +20,9 @@ model User {
   saved Recipe[] @relation("SavedRecipes")
   liked Recipe[] @relation("LikedRecipes")
   mealPlans MealPlan[]
+  goalCalories Int? @default(0)
+  goalProtein Int? @default(0)
+  goalCarbs Int? @default(0)
 }
 
 model Recipe {

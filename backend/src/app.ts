@@ -4,7 +4,8 @@ import authRoutes from "./routes/auth";
 import recipeRoutes from "./routes/recipes";
 import generatePlanRoutes from "./routes/generatePlan";
 import groceryRoutes from "./routes/grocery";
-import mealPlanRoutes from "./routes/mealplan";
+import mealPlanRoutes from "./routes/mealPlan";
+import userGoalRoutes from "./routes/userGoals"
 
 import dotenv from "dotenv";
 
@@ -36,5 +37,6 @@ app.use(recipeRoutes);
 app.use(generatePlanRoutes);
 app.use(groceryRoutes);
 app.use(mealPlanRoutes);
+app.use(userGoalRoutes);
 
 export default app;

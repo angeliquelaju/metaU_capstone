@@ -452,3 +452,7 @@ input {
   text-align: center;
   margin-top: 12px;
 }
+
+.saveGoals-button {
+  margin-left: 10px;
+}

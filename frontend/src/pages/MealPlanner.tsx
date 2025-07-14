@@ -40,16 +40,21 @@ export default function MealPlanner() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [recipesRes, planRes] = await Promise.all([
+        const [recipesRes, planRes, goalsRes] = await Promise.all([
           fetch("http://localhost:4000/recipes/user", {
             credentials: "include",
           }),
           fetch("http://localhost:4000/meal-plan", {
             credentials: "include",
           }),
+          fetch("http://localhost:4000/user/goals", {
+            credentials: "include",
+          }),
         ]);
         const recipes = await recipesRes.json();
+        const goalsData = await goalsRes.json();
         setSavedRecipes(recipes);
+        setGoals(goalsData);
         setRecipePreferences(
           recipes.map((r: any) => ({
             title: r.title,
@@ -60,7 +65,7 @@ export default function MealPlanner() {
         if (planRes.ok) {
           const planData = await planRes.json();
           setPlan(planData.plan);
-          setNutrition(planData.nutrition)
+          setNutrition(planData.nutrition);
         } else {
           setPlan(null);
         }
@@ -140,12 +145,22 @@ export default function MealPlanner() {
               <input
                 type="number"
                 value={goals.carbs}
-                onChange={(e) =>
-                  setGoals({ ...goals, carbs: +e.target.value })
-                }
+                onChange={(e) => setGoals({ ...goals, carbs: +e.target.value })}
                 placeholder="weekly carbs"
               />{" "}
               g
+              <button className="saveGoals-button"
+                onClick={async () => {
+                  await fetch("http://localhost:4000/user/goals", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(goals),
+                  });
+                }}
+              >
+                save goals
+              </button>
             </div>
           )}
 
@@ -170,8 +185,9 @@ export default function MealPlanner() {
                 {nutrition?.daily?.[dayPlan.day] && (
                   <small>
                     {Math.round(nutrition.daily[dayPlan.day].calories)} kcal,{" "}
-                    {Math.round(nutrition.daily[dayPlan.day].protein)} g protein,{" "}
-                    {Math.round(nutrition.daily[dayPlan.day].carbs)} g carbs
+                    {Math.round(nutrition.daily[dayPlan.day].protein)} g
+                    protein, {Math.round(nutrition.daily[dayPlan.day].carbs)} g
+                    carbs
                   </small>
                 )}
               </div>

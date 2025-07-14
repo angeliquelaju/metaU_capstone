@@ -297,14 +297,11 @@ router.get(
         .map(([key]) => key)
         .join(",");
 
-      console.log("top ingredients: ", topIngredients);
-
       const response = await fetch(
         `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10`,
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();
-      console.log("personalized data: ", data);
       res.json(data.results);
     } catch (error) {
       console.error(error);

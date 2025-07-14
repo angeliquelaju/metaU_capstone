@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -11,9 +12,8 @@ const RecipeDetail = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const apiKey = "a2b10d0858114401869726f80933ad86";
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}&includeNutrition=true`,
+          `https://api.spoonacular.com/recipes/${id}/information?apiKey=${SPOON_KEY}&includeNutrition=true`,
         );
         if (!res.ok) throw new Error("failed to fetch recipes");
         const data = await res.json();

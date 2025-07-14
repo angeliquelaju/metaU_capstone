@@ -274,7 +274,6 @@ router.get(
       const allIngredients = userwithLike.liked.flatMap(
         (r) => r.ingredients || [],
       );
-      console.log("user liked ingredients: ", allIngredients);
 
       if (allIngredients.length === 0) {
         res.status(400).json({ error: "no recipes have been liked" });

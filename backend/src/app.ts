@@ -2,9 +2,10 @@ import express from "express";
 import session from "express-session";
 import authRoutes from "./routes/auth";
 import recipeRoutes from "./routes/recipes";
-import generatePlanRoutes from "./routes/generatePlan"
-import groceryRoutes from "./routes/grocery"
-import mealPlanRoutes from "./routes/mealplan"
+import generatePlanRoutes from "./routes/generatePlan";
+import groceryRoutes from "./routes/grocery";
+import mealPlanRoutes from "./routes/mealplan";
+
 import dotenv from "dotenv";
 
 dotenv.config();

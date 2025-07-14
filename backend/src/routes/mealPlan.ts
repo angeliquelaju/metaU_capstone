@@ -67,4 +67,23 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
         res.status(500).json({error: "something went wrongin meal-plan"})
     }
 });
+
+router.get("/meal-plan/history", requireAuth, async (req, res) => {
+    const username = req.session.user?.username;
+    const user = await prisma.user.findUnique({
+        where: {username},
+        include: {
+            mealPlans: {
+                orderBy: {createdAt: "desc"},
+                take: 5,
+            },
+        },
+    });
+    if (!user) {
+        res.status(404).json({error: "user not found"});
+        return;
+    }
+
+    res.json(user.mealPlans)
+})
 export default router;

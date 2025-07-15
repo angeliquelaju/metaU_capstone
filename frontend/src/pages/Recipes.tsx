@@ -3,6 +3,7 @@ import { useIngredients } from "../context/IngredientContext";
 import RecipeCard from "../components/RecipeCard";
 import FilterModal from "../components/FilterModal";
 const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
+import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 
 const Recipes = () => {
   const { selected } = useIngredients(); //selected ingredients from the kichen page
@@ -11,8 +12,6 @@ const Recipes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [count, setCount] = useState(8); //for loading more recipes
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [likeIds, setLikeIDs] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
   const [filters, setFilters] = useState({
     maxReadyTime: "",
@@ -23,40 +22,17 @@ const Recipes = () => {
     minCalories: "",
     maxCalories: "",
   });
+
+  const {
+    savedIds, 
+    likeIds,
+    handleSave,
+    handleUnsave,
+    handleLike,
+    handleUnlike,
+  } = likeNSaveRecipes();
+
   const MAX_MISSING_INGREDIENTS = 5;
-
-  //fetching recipes users have saved to show up on their profile
-  const fetchSaved = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/recipes/user", {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("failed to get saved recipes");
-      const data = await res.json();
-      const savedSet: Set<string> = new Set(
-        data.map((r: any) => r.id.toString()),
-      );
-      setSavedIds(savedSet);
-    } catch (err) {
-      console.error("failed to load saved recipes", err);
-    }
-  };
-
-  //fetching recipes users have liked for personalized page
-  const fetchLiked = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/recipes/likedRecipes", {
-        credentials: "include",
-      });
-      const data = await res.json();
-      const likedSet: Set<string> = new Set(
-        data.map((r: any) => r.id.toString()),
-      );
-      setLikeIDs(likedSet);
-    } catch (err) {
-      console.error("failed to fetch liked recipes", err);
-    }
-  };
 
   //fetch recipe list (default before filters)
   const fetchByIngredients = async () => {
@@ -70,8 +46,6 @@ const Recipes = () => {
       if (!res.ok) throw new Error("failed to fetch recipes");
       const data = await res.json();
       setRecipes(data);
-      fetchSaved();
-      fetchLiked();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -110,104 +84,6 @@ const Recipes = () => {
       setError(err.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  //saving a recipe to that specific user's list
-  const handleSave = async (recipe: any) => {
-    try {
-      const res = await fetch("http://localhost:4000/recipes/save", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: recipe.id.toString(),
-          title: recipe.title,
-          image: recipe.image,
-        }),
-      });
-      if (res.status === 200) {
-        setSavedIds((prev) => new Set(prev).add(recipe.id.toString()));
-      } else {
-        const data = await res.json();
-        alert(data.error || "failed to save recipe");
-      }
-    } catch (error) {
-      alert("something went wrong while saving");
-    }
-  };
-
-  //unsave recipes
-  const handleUnsave = async (recipeId: string) => {
-    try {
-      const res = await fetch(
-        `http://localhost:4000/recipes/remove/${recipeId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
-      if (res.ok) {
-        setSavedIds((prev) => {
-          const updated = new Set(prev);
-          updated.delete(recipeId);
-          return updated;
-        });
-      } else {
-        const data = await res.json();
-        alert(data.error || "failed to unsave");
-      }
-    } catch (err) {
-      alert("error removing");
-    }
-  };
-
-  //liking a recipe and sending their ingredients to the database
-  const handleLike = async (recipe: any) => {
-    const ingredients = recipe.usedIngredients
-      .concat(recipe.missedIngredients)
-      .map((ing: any) => ing.name);
-
-    const res = await fetch("http://localhost:4000/recipes/like", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: recipe.id.toString(),
-        title: recipe.title,
-        image: recipe.image,
-        ingredients,
-      }),
-    });
-    if (res.ok) {
-      setLikeIDs((prev) => new Set(prev).add(recipe.id.toString()));
-    }
-  };
-
-  //unlike recipe
-  const handleUnlike = async (recipeId: string) => {
-    try {
-      const res = await fetch(
-        `http://localhost:4000/recipes/unlike/${recipeId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
-      if (res.ok) {
-        setLikeIDs((prev) => {
-          const updated = new Set(prev);
-          updated.delete(recipeId);
-          return updated;
-        });
-      } else {
-        const data = await res.json();
-        alert(data.error || "failed to unlike");
-      }
-    } catch (error) {
-      alert("something went wrong while liking");
     }
   };
 

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FriendSuggestion from "../components/FriendSuggestion";
 
 function Profile({
   user,
@@ -69,6 +70,7 @@ function Profile({
           ))}
         </div>
       )}
+      <FriendSuggestion />
     </div>
   );
 }

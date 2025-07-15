@@ -86,6 +86,30 @@ export default function MealPlanner() {
   }, []);
 
   const handleGenerate = async () => {
+    const totalMeals = Object.values(mealCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
+    const totalRecipes = recipePreferences.reduce(
+      (sum, recipe) => sum + recipe.servings,
+      0
+    );
+
+    if (totalRecipes < totalMeals) {
+      setMessage(
+        `there are more weekly meal selected (${totalMeals}) than recipe servings (${totalRecipes}). please add more recipes`
+      );
+      return;
+    }
+
+    if (totalRecipes > totalMeals) {
+      setMessage(
+        `there are less weekly meal selected (${totalMeals}) than recipe servings (${totalRecipes}). please reduce the number of recipes`
+      );
+      return;
+    }
+
     const res = await fetch("http://localhost:4000/generate-plan", {
       method: "POST",
       credentials: "include",
@@ -268,8 +292,11 @@ export default function MealPlanner() {
 
                   for (const [id, { title, servings }] of recipeMap.entries()) {
                     populatePreferences.push({
-                      title, spoonacularId: id, servings});
-                    }
+                      title,
+                      spoonacularId: id,
+                      servings,
+                    });
+                  }
                   setRecipePreferences(populatePreferences);
                 }}
               >

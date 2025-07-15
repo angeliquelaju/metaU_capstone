@@ -104,7 +104,9 @@ export default function MealPlanner() {
 
     if (totalRecipes < totalMeals) {
       let index = 0;
-      while (totalRecipes < totalMeals)  {
+      let counter = 0;
+      const max_attempts = 1000;
+      while (totalRecipes < totalMeals && counter < max_attempts)  {
         const recipe = updatedPreference[index % updatedPreference.length];
         if (recipe.servings < 10) {
           recipe.servings++;
@@ -115,7 +117,9 @@ export default function MealPlanner() {
       }
     } else if (totalRecipes > totalMeals) {
       let index = 0;
-      while (totalRecipes > totalMeals) {
+      let counter = 0;
+      const max_attempts = 1000;
+      while (totalRecipes > totalMeals && counter < max_attempts) {
         const recipe = updatedPreference[index % updatedPreference.length];
         if (recipe.servings > 1) {
           recipe.servings--;
@@ -185,11 +189,11 @@ export default function MealPlanner() {
       servings: number;
     }[] = []
 
-    for (const r of savedRecipes) {
-      const id = parseInt(r.id);
+    for (const recipe of savedRecipes) {
+      const id = parseInt(recipe.id);
       const match = recipeMap.get(id);
       populatePreferences.push({
-        title: r.title,
+        title: recipe.title,
         spoonacularId: id,
         servings: match ? match.servings : 0,
       });

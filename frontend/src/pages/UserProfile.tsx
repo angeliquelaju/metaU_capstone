@@ -63,6 +63,7 @@ const UserProfile = () => {
                   onLike={() => handleLike(recipe)}
                   onUnlike={() => handleUnlike(recipe.id.toString())}
                   showNutrition={false}
+                  showIngredientMatch={false}
                 />
                 {isSaved && <p className="also-saved">also saved by you</p>}
               </div>

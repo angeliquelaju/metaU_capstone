@@ -78,6 +78,7 @@ function Profile({
                 onLike={() => handleLike(recipe)}
                 onUnlike={() => handleUnlike(recipe.id.toString())}
                 showNutrition={false}
+                showIngredientMatch={false}
               />
             );
           })}

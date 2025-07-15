@@ -13,6 +13,7 @@ type Props = {
   onLike: () => void;
   onUnlike: () => void;
   showNutrition: boolean;
+  showIngredientMatch: boolean;
 };
 
 const RecipeCard: React.FC<Props> = ({
@@ -24,6 +25,7 @@ const RecipeCard: React.FC<Props> = ({
   onLike,
   onUnlike,
   showNutrition,
+  showIngredientMatch,
 }) => {
   const navigate = useNavigate();
   const displayValues: string[] = [];
@@ -48,22 +50,22 @@ const RecipeCard: React.FC<Props> = ({
 
       {showNutrition ? (
         <p>{displayValues.join(" • ")}</p>
-      ) : recipe.missedIngredients?.length > 0 ? (
+      ) : showIngredientMatch ? (
+      recipe.missedIngredients?.length > 0 ? (
         <p className="missing-ingredients">
           Missing: {recipe.missedIngredients.map((i: any) => i.name).join(", ")}
         </p>
       ) : (
         <p className="missing-ingredients">you have all the ingredients</p>
-      )}
+      )
+    ) : null}
 
-      <button
-        className="view-button"
-        onClick={() => navigate(`/recipes/${recipe.id}`)}
-      >
-        view recipe
-      </button>
+      <button className="view-button" onClick={() => navigate(`/recipes/${recipe.id}`)}>view recipe</button>
       {isSaved ? (
-        <button className="unsave-button" onClick={onUnsave}>
+        <button
+          className="unsave-button"
+          onClick={onUnsave}
+        >
           <FaBookmark />
         </button>
       ) : (
@@ -73,7 +75,10 @@ const RecipeCard: React.FC<Props> = ({
       )}
 
       {isLiked ? (
-        <button className="unlike-button" onClick={onUnlike}>
+        <button
+          className="unlike-button"
+          onClick={onUnlike}
+        >
           <FcLike />
         </button>
       ) : (

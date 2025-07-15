@@ -133,6 +133,7 @@ const Recipes = () => {
                 onLike={() => handleLike(recipe)}
                 onUnlike={() => handleUnlike(recipe.id.toString())}
                 showNutrition={showNutrition}
+                showIngredientMatch={true}
               />
             );
           })}

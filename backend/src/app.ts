@@ -5,8 +5,8 @@ import recipeRoutes from "./routes/recipes";
 import generatePlanRoutes from "./routes/generatePlan";
 import groceryRoutes from "./routes/grocery";
 import mealPlanRoutes from "./routes/mealPlan";
-import userGoalRoutes from "./routes/userGoals"
-import friendSuggestionRoutes from "./routes/friendSuggestion"
+import userGoalRoutes from "./routes/userGoals";
+import friendSuggestionRoutes from "./routes/friendSuggestion";
 
 import dotenv from "dotenv";
 

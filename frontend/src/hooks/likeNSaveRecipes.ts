@@ -29,15 +29,15 @@ export const likeNSaveRecipes = () => {
 
   //saving a recipe to that specific user's list
   const handleSave = async (recipe: any) => {
-    let ingredients: string [] = [];
+    let ingredients: string[] = [];
     if (recipe.usedIngredients && recipe.missedIngredients) {
       ingredients = recipe.usedIngredients
-      .concat(recipe.missedIngredients)
-      .map((ing: any) => ing.name);
+        .concat(recipe.missedIngredients)
+        .map((ing: any) => ing.name);
     } else if (recipe.ingredients) {
-        ingredients = recipe.ingredients.map((ing: any) => ing.name || ing);
+      ingredients = recipe.ingredients.map((ing: any) => ing.name || ing);
     }
-    
+
     try {
       const res = await fetch("http://localhost:4000/recipes/save", {
         method: "POST",
@@ -90,17 +90,17 @@ export const likeNSaveRecipes = () => {
 
   //liking a recipe and sending their ingredients to the database
   const handleLike = async (recipe: any) => {
-    let ingredients: string [] = [];
+    let ingredients: string[] = [];
     if (recipe.usedIngredients && recipe.missedIngredients) {
       ingredients = recipe.usedIngredients
-      .concat(recipe.missedIngredients)
-      .map((ing: any) => ing.name);
+        .concat(recipe.missedIngredients)
+        .map((ing: any) => ing.name);
     } else if (recipe.ingredients) {
-        ingredients = recipe.ingredients.map((ing: any) => ing.name || ing);
+      ingredients = recipe.ingredients.map((ing: any) => ing.name || ing);
     }
-    
+
     if (!ingredients.length) {
-        console.warn("no ingredients found for recipe: ", recipe.id);
+      console.warn("no ingredients found for recipe: ", recipe.id);
     }
 
     const res = await fetch("http://localhost:4000/recipes/like", {

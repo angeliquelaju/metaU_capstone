@@ -24,7 +24,7 @@ const Recipes = () => {
   });
 
   const {
-    savedIds, 
+    savedIds,
     likeIds,
     handleSave,
     handleUnsave,
@@ -63,7 +63,7 @@ const Recipes = () => {
     try {
       const params = new URLSearchParams();
       params.append("apiKey", `${SPOON_KEY}`);
-      params.append("ranking", "2"); //prioritizes minimizing missing ingredients first 
+      params.append("ranking", "2"); //prioritizes minimizing missing ingredients first
       params.append("number", "25"); //maximum number of recipes to return
       params.append("addRecipeNutrition", "true");
       params.append("includeIngredients", selected.join(","));

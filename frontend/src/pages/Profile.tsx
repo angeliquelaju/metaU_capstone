@@ -12,7 +12,7 @@ function Profile({
   setUser: (u: string | null) => void;
 }) {
   const {
-    savedIds, 
+    savedIds,
     likeIds,
     handleSave,
     handleUnsave,
@@ -38,8 +38,7 @@ function Profile({
         const res = await fetch("http://localhost:4000/recipes/user", {
           credentials: "include",
         });
-        if (!res.ok)
-          throw new Error("failed to fetch current user data");
+        if (!res.ok) throw new Error("failed to fetch current user data");
         const data = await res.json();
         setSaved(data);
       } catch (err: any) {

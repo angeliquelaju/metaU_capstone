@@ -11,7 +11,7 @@ const UserProfile = () => {
   const [error, setError] = useState("");
 
   const {
-    savedIds, 
+    savedIds,
     likeIds,
     handleSave,
     handleUnsave,
@@ -23,7 +23,7 @@ const UserProfile = () => {
     const fetchUserRecipes = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/recipes/user/${username}`
+          `http://localhost:4000/recipes/user/${username}`,
         );
         if (!res.ok) throw new Error("failed to load user recipes");
         const data = await res.json();
@@ -39,7 +39,7 @@ const UserProfile = () => {
 
   return (
     <div className="container">
-        <button className="back" onClick={() => navigate(-1)}>
+      <button className="back" onClick={() => navigate(-1)}>
         back
       </button>
       <h2>{username}'s saved recipes</h2>

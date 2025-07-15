@@ -36,23 +36,23 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
         { calories: number; protein: number; carbs: number }
       >,
     };
-    
+
     //flatten the meal plan (includes a list of meals for each day) into a single array of all meals across the week
     //this allows same meals eaten multiple times a week to be fetched just once, gets all the unique recipe Ids
     const allMeals = days.flatMap((d) => d.meals);
     const uniqueId = [...new Set(allMeals.map((m) => m.spoonacularId))];
 
     //fetch all unique recipe's nutritional data in parallel by sending out multiple async api request using promise.all
-    //so instead of waiting n times, it'd just be 1 time 
+    //so instead of waiting n times, it'd just be 1 time
     const spoonacularRes = await Promise.all(
       uniqueId.map(async (id) => {
         const response = await fetch(
-          `https://api.spoonacular.com/recipes/${id}/nutritionWidget.json?apiKey=${SPOON_KEY}`
+          `https://api.spoonacular.com/recipes/${id}/nutritionWidget.json?apiKey=${SPOON_KEY}`,
         );
         if (!response.ok) {
           console.error(
             `error fetching spoonacular recipe ${id}: `,
-            await response.text()
+            await response.text(),
           );
           return null;
         }
@@ -63,19 +63,22 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
           protein: parseFloat(data.protein.replace("g", "")),
           carbs: parseFloat(data.carbs.replace("g", "")),
         };
-      })
+      }),
     );
-    
-    //accessing the recipe's nutrition info by id in a map has O(1) time 
-    const nutritionMap = new Map<number, {calories: number, protein: number, carbs: number}>();
+
+    //accessing the recipe's nutrition info by id in a map has O(1) time
+    const nutritionMap = new Map<
+      number,
+      { calories: number; protein: number; carbs: number }
+    >();
     for (const item of spoonacularRes) {
-        if (item) {
-            nutritionMap.set(item.id, {
-                calories: item.calories,
-                protein: item.protein,
-                carbs: item.carbs,
-            });
-        }
+      if (item) {
+        nutritionMap.set(item.id, {
+          calories: item.calories,
+          protein: item.protein,
+          carbs: item.carbs,
+        });
+      }
     }
 
     //calculate daily and weekly nutrition info

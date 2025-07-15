@@ -49,8 +49,13 @@ router.post(
 
       const recipe = await prisma.recipe.upsert({
         where: { id },
-        update: {ingredients: ingredients?.length ? ingredients: undefined},
-        create: { id, title, image, ingredients: ingredients?.length ? ingredients: [] },
+        update: { ingredients: ingredients?.length ? ingredients : undefined },
+        create: {
+          id,
+          title,
+          image,
+          ingredients: ingredients?.length ? ingredients : [],
+        },
       });
 
       await prisma.user.update({
@@ -66,7 +71,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "internal error" });
     }
-  }
+  },
 );
 
 //getting the recipes that have been saved by a user
@@ -90,7 +95,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  }
+  },
 );
 
 //delete recipes that have been saved
@@ -125,7 +130,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  }
+  },
 );
 
 //liking recipes
@@ -197,7 +202,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  }
+  },
 );
 
 //getting the recipes that have been liked
@@ -226,7 +231,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  }
+  },
 );
 
 //unlike recipes
@@ -261,7 +266,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  }
+  },
 );
 
 //getting personalized recipes
@@ -287,7 +292,7 @@ router.get(
 
       //get ingredients from the liked recipes
       const allIngredients = userwithLike.liked.flatMap(
-        (r) => r.ingredients || []
+        (r) => r.ingredients || [],
       );
 
       if (allIngredients.length === 0) {
@@ -297,7 +302,7 @@ router.get(
 
       //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) =>
-        ing.toLowerCase().split(/\s+/)
+        ing.toLowerCase().split(/\s+/),
       );
 
       const frequency: Record<string, number> = {};
@@ -312,7 +317,7 @@ router.get(
         .join(",");
 
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`,
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();
@@ -321,7 +326,7 @@ router.get(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  }
+  },
 );
 
 //get other user's saved recipes using username

@@ -20,13 +20,13 @@ router.get("/user/goals", requireAuth, async (req, res) => {
 
 router.post("/user/goals", requireAuth, async (req, res) => {
   const username = req.session.user?.username;
-  const {calories, protein, carbs} =req.body;
+  const { calories, protein, carbs } = req.body;
   const user = await prisma.user.update({
-    where: {username},
+    where: { username },
     data: {
-        goalCalories: calories,
-        goalProtein: protein,
-        goalCarbs: carbs,
+      goalCalories: calories,
+      goalProtein: protein,
+      goalCarbs: carbs,
     },
   });
   res.json({

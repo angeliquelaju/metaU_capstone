@@ -17,7 +17,7 @@ router.post(
   "/recipes/save",
   requireAuth,
   async (req: Request, res: Response) => {
-    const { id, title, image } = req.body;
+    const { id, title, image, ingredients } = req.body;
     const username = req.session.user?.username;
     if (!username) {
       res.status(401).json({ error: "not logged in" });
@@ -49,8 +49,8 @@ router.post(
 
       const recipe = await prisma.recipe.upsert({
         where: { id },
-        update: {},
-        create: { id, title, image },
+        update: {ingredients: ingredients?.length ? ingredients: undefined},
+        create: { id, title, image, ingredients: ingredients?.length ? ingredients: [] },
       });
 
       await prisma.user.update({
@@ -66,7 +66,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //getting the recipes that have been saved by a user
@@ -90,7 +90,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //delete recipes that have been saved
@@ -125,7 +125,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //liking recipes
@@ -147,13 +147,34 @@ router.post(
         res.status(404).json({ error: "user not found" });
         return;
       }
+      const existingRecipe = await prisma.recipe.findUnique({
+        where: { id },
+      });
+
+      let updatedRecipe;
+      if (existingRecipe) {
+        if (
+          !existingRecipe.ingredients ||
+          existingRecipe.ingredients.length === 0
+        ) {
+          updatedRecipe = await prisma.recipe.update({
+            where: { id },
+            data: { ingredients },
+          });
+        } else {
+          updatedRecipe = existingRecipe;
+        }
+      } else {
+        updatedRecipe = await prisma.recipe.create({
+          data: { id, title, image, ingredients },
+        });
+      }
+
       const alreadyLiked = await prisma.recipe.findFirst({
         where: {
           id,
           userLikes: {
-            some: {
-              id: user.id,
-            },
+            some: { id: user.id },
           },
         },
       });
@@ -163,17 +184,11 @@ router.post(
         return;
       }
 
-      const recipe = await prisma.recipe.upsert({
-        where: { id },
-        update: {},
-        create: { id, title, image, ingredients },
-      });
-
       await prisma.user.update({
         where: { id: user.id },
         data: {
           liked: {
-            connect: { id: recipe.id },
+            connect: { id: updatedRecipe.id },
           },
         },
       });
@@ -182,7 +197,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  },
+  }
 );
 
 //getting the recipes that have been liked
@@ -211,7 +226,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //unlike recipes
@@ -246,7 +261,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //getting personalized recipes
@@ -272,17 +287,17 @@ router.get(
 
       //get ingredients from the liked recipes
       const allIngredients = userwithLike.liked.flatMap(
-        (r) => r.ingredients || [],
+        (r) => r.ingredients || []
       );
 
       if (allIngredients.length === 0) {
-        res.status(400).json({ error: "no recipes have been liked" });
+        res.status(400).json({ error: "no ingredients" });
         return;
       }
 
       //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) =>
-        ing.toLowerCase().split(/\s+/),
+        ing.toLowerCase().split(/\s+/)
       );
 
       const frequency: Record<string, number> = {};
@@ -297,7 +312,7 @@ router.get(
         .join(",");
 
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10`,
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();
@@ -306,30 +321,28 @@ router.get(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  },
+  }
 );
 
 //get other user's saved recipes using username
-router.get(
-  "/recipes/user/:username",
-  async (req: Request, res: Response) => {
-    const {username} = req.params;
+router.get("/recipes/user/:username", async (req: Request, res: Response) => {
+  const { username } = req.params;
 
-    try {
-      const user = await prisma.user.findUnique({
-        where: {username},
-        include: {saved: true}
-      });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+      include: { saved: true },
+    });
 
-      if (!user) {
-        res.status(404).json({error: "user not found"});
-        return;
-      }
-      res.json(user.saved);
-    } catch (err) {
-      console.error("error in public user recipe fetch: ", err);
-      res.status(500).json({ error: "internal error" });
+    if (!user) {
+      res.status(404).json({ error: "user not found" });
+      return;
     }
-  });
+    res.json(user.saved);
+  } catch (err) {
+    console.error("error in public user recipe fetch: ", err);
+    res.status(500).json({ error: "internal error" });
+  }
+});
 
 export default router;

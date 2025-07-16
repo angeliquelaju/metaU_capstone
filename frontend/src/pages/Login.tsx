@@ -46,6 +46,8 @@ function Login({ setUser }: { setUser: (name: string) => void }) {
         <button type="submit">Login</button>
         {error && <p className="error">{error}</p>}
       </form>
+      <p>don't have an account?</p>
+      <button onClick={() => navigate("/register")}>register</button>
     </div>
   );
 }

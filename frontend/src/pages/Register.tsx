@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +41,8 @@ function Register() {
         <button type="submit">Register</button>
         {message && <p className="error">{message}</p>}
       </form>
+      <p>already have an account?</p>
+      <button onClick={() => navigate("/login")}>login</button>
     </div>
   );
 }

@@ -93,7 +93,6 @@ export default function MealPlanner() {
       (sum, count) => sum + count,
       0,
     );
-
     let totalRecipes = recipePreferences.reduce(
       (sum, recipe) => sum + recipe.servings,
       0,
@@ -101,33 +100,37 @@ export default function MealPlanner() {
 
     let autoAdjust = false;
     const updatedPreference = [...recipePreferences];
+    let counter = 0;
 
-    if (totalRecipes < totalMeals) {
-      let index = 0;
-      let counter = 0;
-      const max_attempts = 1000;
-      while (totalRecipes < totalMeals && counter < max_attempts) {
-        const recipe = updatedPreference[index % updatedPreference.length];
-        if (recipe.servings < 10) {
-          recipe.servings++;
-          totalRecipes++;
-          autoAdjust = true;
-        }
-        index++;
+    //increase servings based on recipe that has the least number of servings
+    while (totalRecipes < totalMeals) {
+      const recipe = updatedPreference.reduce((min, curr) =>
+        curr.servings < min.servings ? curr : min,
+      );
+
+      recipe.servings++;
+      totalRecipes++;
+      autoAdjust = true;
+
+      //prevents infinite loop
+      counter++;
+      if (counter > updatedPreference.length * 10) break;
+    }
+
+    //decrease servings based on recipe that has the most number of servings
+    while (totalRecipes > totalMeals) {
+      const recipe = updatedPreference.reduce((max, curr) =>
+        curr.servings > max.servings ? curr : max,
+      );
+
+      if (recipe.servings > 0) {
+        recipe.servings--;
+        totalRecipes--;
+        autoAdjust = true;
       }
-    } else if (totalRecipes > totalMeals) {
-      let index = 0;
-      let counter = 0;
-      const max_attempts = 1000;
-      while (totalRecipes > totalMeals && counter < max_attempts) {
-        const recipe = updatedPreference[index % updatedPreference.length];
-        if (recipe.servings > 1) {
-          recipe.servings--;
-          totalRecipes--;
-          autoAdjust = true;
-        }
-        index++;
-      }
+      //if no recipe can be reduce, infinite loop prevented
+      counter++;
+      if (counter > updatedPreference.length * 10) break;
     }
 
     if (autoAdjust) {

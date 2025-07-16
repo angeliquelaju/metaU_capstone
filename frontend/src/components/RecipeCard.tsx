@@ -53,7 +53,7 @@ const RecipeCard: React.FC<Props> = ({
       ) : showIngredientMatch ? (
         recipe.missedIngredients?.length > 0 ? (
           <p className="missing-ingredients">
-            Missing: 
+            Missing:
             {recipe.missedIngredients.map((i: any) => i.name).join(", ")}
           </p>
         ) : (

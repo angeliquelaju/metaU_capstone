@@ -55,9 +55,12 @@ export default function MealPlanner() {
             credentials: "include",
           }),
         ]);
-        const recipes = await recipesRes.json();
-        const goalsData = await goalsRes.json();
-        const historyData = await historyRes.json();
+
+        const [recipes, goalsData, historyData] = await Promise.all([
+          recipesRes.json(),
+          goalsRes.json(),
+          historyRes.json(),
+        ])
         setSavedRecipes(recipes);
         setGoals(goalsData);
         setPlanHistory(historyData);
@@ -91,22 +94,47 @@ export default function MealPlanner() {
       0
     );
 
-    const totalRecipes = recipePreferences.reduce(
+    let totalRecipes = recipePreferences.reduce(
       (sum, recipe) => sum + recipe.servings,
       0
     );
 
+    let autoAdjust = false;
+    const updatedPreference = [...recipePreferences];
+
     if (totalRecipes < totalMeals) {
-      setMessage(
-        `there are more weekly meal selected (${totalMeals}) than recipe servings (${totalRecipes}). please add more recipes`
-      );
-      return;
+      let index = 0;
+      let counter = 0;
+      const max_attempts = 1000;
+      while (totalRecipes < totalMeals && counter < max_attempts)  {
+        const recipe = updatedPreference[index % updatedPreference.length];
+        if (recipe.servings < 10) {
+          recipe.servings++;
+          totalRecipes++;
+          autoAdjust = true;
+        }
+        index++;
+      }
+    } else if (totalRecipes > totalMeals) {
+      let index = 0;
+      let counter = 0;
+      const max_attempts = 1000;
+      while (totalRecipes > totalMeals && counter < max_attempts) {
+        const recipe = updatedPreference[index % updatedPreference.length];
+        if (recipe.servings > 1) {
+          recipe.servings--;
+          totalRecipes--;
+          autoAdjust = true;
+        }
+        index++;
+      }
     }
 
-    if (totalRecipes > totalMeals) {
+    if (autoAdjust) {
       setMessage(
-        `there are less weekly meal selected (${totalMeals}) than recipe servings (${totalRecipes}). please reduce the number of recipes`
+        `adjusted recipe servings automatically to match ${totalMeals} meals.`
       );
+      setRecipePreferences(updatedPreference);
       return;
     }
 
@@ -125,6 +153,59 @@ export default function MealPlanner() {
     }
   };
 
+  const handlePlanHistory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPlan = planHistory.find((p) => p.id === +e.target.value);
+    if (!selectedPlan) return;
+    
+    const parsedPlan = selectedPlan.plan as {
+      day: string;
+      meals: {title: string; spoonacularId: number; servings: number}[];
+    }[];
+
+    const dayMealCounts: Record<string, number> = {};
+    for (const day of DAYS) {
+      dayMealCounts[day] = parsedPlan.find((d) => d.day === day)?.meals.length || 0;
+    }
+    setMealCounts(dayMealCounts);
+
+    const recipeMap = new Map<number, {title: string; servings: number}>();
+    for (const day of parsedPlan) {
+      for (const meal of day.meals) {
+        const existing = recipeMap.get(meal.spoonacularId);
+        if (existing) {
+          existing.servings += meal.servings;
+        } else {
+          recipeMap.set(meal.spoonacularId, {
+            title: meal.title,
+            servings: meal.servings,
+          });
+        }
+      }
+    }
+
+    const populatePreferences: {
+      title: string;
+      spoonacularId: number;
+      servings: number;
+    }[] = []
+
+    for (const recipe of savedRecipes) {
+      const id = parseInt(recipe.id);
+      const match = recipeMap.get(id);
+      populatePreferences.push({
+        title: recipe.title,
+        spoonacularId: id,
+        servings: match ? match.servings : 0,
+      });
+      recipeMap.delete(id);
+    }
+    
+    for (const [id, {title, servings}] of recipeMap.entries()) {
+      populatePreferences.push({title, spoonacularId: id, servings});
+    }
+    setRecipePreferences(populatePreferences);
+  };
+
   if (loading) return <p>loading saved recipes...</p>;
 
   return (
@@ -136,22 +217,20 @@ export default function MealPlanner() {
             <div className="nutrition-overview">
               <h3>weekly nutrition</h3>
               <p>
-                calories: {Math.round(nutrition.weekly.calories)} /{" "}
-                {goals.calories}{" "}
+                calories: {Math.round(nutrition.weekly.calories)} / {goals.calories} 
                 {nutrition.weekly.calories >= goals.calories
-                  ? "yes ✅"
+                  ? " yes ✅"
                   : " no ❌"}
               </p>
               <p>
-                protein: {Math.round(nutrition.weekly.protein)} /{" "}
-                {goals.protein}{" "}
+                protein: {Math.round(nutrition.weekly.protein)} / {goals.protein} 
                 {nutrition.weekly.protein >= goals.protein
-                  ? "yes ✅"
+                  ? " yes ✅"
                   : " no ❌"}
               </p>
               <p>
-                carbs: {Math.round(nutrition.weekly.carbs)} / {goals.carbs}{" "}
-                {nutrition.weekly.carbs >= goals.carbs ? "yes ✅" : " no ❌"}
+                carbs: {Math.round(nutrition.weekly.carbs)} / {goals.carbs}
+                {nutrition.weekly.carbs >= goals.carbs ? " yes ✅" : " no ❌"}
               </p>
               <h4>set weekly goals:</h4>
               <input
@@ -161,7 +240,7 @@ export default function MealPlanner() {
                   setGoals({ ...goals, calories: +e.target.value })
                 }
                 placeholder="weekly calories"
-              />{" "}
+              />
               kcal
               <input
                 type="number"
@@ -170,14 +249,14 @@ export default function MealPlanner() {
                   setGoals({ ...goals, protein: +e.target.value })
                 }
                 placeholder="weekly protein"
-              />{" "}
+              />
               g
               <input
                 type="number"
                 value={goals.carbs}
                 onChange={(e) => setGoals({ ...goals, carbs: +e.target.value })}
                 placeholder="weekly carbs"
-              />{" "}
+              />
               g
               <button
                 className="saveGoals-button"
@@ -206,7 +285,7 @@ export default function MealPlanner() {
                       className="calendar-meal"
                       onClick={() => navigate(`/recipes/${meal.spoonacularId}`)}
                     >
-                      {meal.title}{" "}
+                      {meal.title}
                       {meal.servings > 1 ? `(x${meal.servings})` : ""}
                     </div>
                   ))
@@ -215,10 +294,9 @@ export default function MealPlanner() {
                 )}
                 {nutrition?.daily?.[dayPlan.day] && (
                   <small>
-                    {Math.round(nutrition.daily[dayPlan.day].calories)} kcal,{" "}
-                    {Math.round(nutrition.daily[dayPlan.day].protein)} g
-                    protein, {Math.round(nutrition.daily[dayPlan.day].carbs)} g
-                    carbs
+                    {Math.round(nutrition.daily[dayPlan.day].calories)} kcal, 
+                    {Math.round(nutrition.daily[dayPlan.day].protein)} g protein, 
+                    {Math.round(nutrition.daily[dayPlan.day].carbs)} g carbs
                   </small>
                 )}
               </div>
@@ -234,72 +312,7 @@ export default function MealPlanner() {
             <>
               <h4>use previous plan</h4>
               <select
-                onChange={(e) => {
-                  const selectedPlan = planHistory.find(
-                    (p) => p.id === +e.target.value
-                  );
-                  if (!selectedPlan) return;
-
-                  const parsedPlan = selectedPlan.plan as {
-                    day: string;
-                    meals: {
-                      title: string;
-                      spoonacularId: number;
-                      servings: number;
-                    }[];
-                  }[];
-
-                  const dayMealCounts: Record<string, number> = {};
-                  for (const day of DAYS) {
-                    dayMealCounts[day] =
-                      parsedPlan.find((d) => d.day === day)?.meals.length || 0;
-                  }
-                  setMealCounts(dayMealCounts);
-
-                  const recipeMap = new Map<
-                    number,
-                    { title: string; servings: number }
-                  >();
-                  for (const day of parsedPlan) {
-                    for (const meal of day.meals) {
-                      const existing = recipeMap.get(meal.spoonacularId);
-                      if (existing) {
-                        existing.servings += meal.servings;
-                      } else {
-                        recipeMap.set(meal.spoonacularId, {
-                          title: meal.title,
-                          servings: meal.servings,
-                        });
-                      }
-                    }
-                  }
-                  const populatePreferences: {
-                    title: string;
-                    spoonacularId: number;
-                    servings: number;
-                  }[] = [];
-
-                  for (const r of savedRecipes) {
-                    const id = parseInt(r.id);
-                    const match = recipeMap.get(id);
-                    populatePreferences.push({
-                      title: r.title,
-                      spoonacularId: id,
-                      servings: match ? match.servings : 0,
-                    });
-                    recipeMap.delete(id);
-                  }
-
-                  for (const [id, { title, servings }] of recipeMap.entries()) {
-                    populatePreferences.push({
-                      title,
-                      spoonacularId: id,
-                      servings,
-                    });
-                  }
-                  setRecipePreferences(populatePreferences);
-                }}
-              >
+                onChange={handlePlanHistory}>
                 <option value="">pick a previous plan</option>
                 {planHistory.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -327,7 +340,7 @@ export default function MealPlanner() {
           <h3>meals per day</h3>
           {DAYS.map((day) => (
             <div key={day}>
-              {day}:{" "}
+              {day}: 
               <input
                 type="number"
                 value={mealCounts[day]}
@@ -346,7 +359,7 @@ export default function MealPlanner() {
           ) : (
             recipePreferences.map((r, i) => (
               <div key={r.spoonacularId}>
-                {r.title}: eat{" "}
+                {r.title}: eat
                 <input
                   type="number"
                   value={r.servings}
@@ -357,7 +370,7 @@ export default function MealPlanner() {
                     updated[i].servings = +e.target.value;
                     setRecipePreferences(updated);
                   }}
-                />{" "}
+                />
                 times
               </div>
             ))

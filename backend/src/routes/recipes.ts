@@ -471,7 +471,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
         const normalized = totalSimilarity === 0 ? 0 : totalWeighted / totalSimilarity;
         //make the score consistent by dividing it by the maximum weight (3)
         //as the totalWeighted can be over 1 beacuse there are multiple user scores added together
-        const percentage = Math.min((normalized / 3) * 100, 100);
+        const percentage = (normalized / 3) * 100;
         return {
           ...recipe,
           score: parseFloat(percentage.toFixed(2)),

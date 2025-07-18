@@ -83,6 +83,9 @@ function Profile({
           })}
         </div>
       )}
+      <button
+          onClick={() => navigate("/recommended")}
+        >recommended recipes</button>
       <FriendSuggestion />
     </div>
   );

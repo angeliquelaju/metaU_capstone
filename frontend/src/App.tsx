@@ -16,6 +16,7 @@ import Personalized from "./pages/Personalized.tsx";
 import MealPlanner from "./pages/MealPlanner.tsx";
 import GroceryList from "./pages/GroceryList.tsx";
 import UserProfile from "./pages/UserProfile.tsx";
+import Recommended from "./pages/Recommended.tsx";
 
 function App() {
   const [user, setUser] = useState<string | null>(null);
@@ -62,6 +63,7 @@ function App() {
           <Route path="/planner" element={<MealPlanner />} />
           <Route path="/grocery" element={<GroceryList />} />
           <Route path="/user/:username" element={<UserProfile />} />
+          <Route path="/recommended" element={<Recommended />} />
         </Routes>
       </main>
     </div>

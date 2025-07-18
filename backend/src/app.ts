@@ -23,13 +23,14 @@ app.use(
 );
 
 app.use(express.json());
+app.set("trust proxy", 1);
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "defaultsecret",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 },
+    cookie: { secure: true, httpOnly: true, sameSite: "none", maxAge: 1000 * 60 * 60 },
   }),
 );
 

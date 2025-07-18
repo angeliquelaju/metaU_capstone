@@ -301,6 +301,7 @@ router.get(
 
       //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) =>
+        //.trim().split(/\s+/) takes out all whitespaces and splits it no matter what whitespace there is
         ing.trim().toLowerCase().split(/\s+/)
       );
 

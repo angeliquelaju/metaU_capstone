@@ -128,9 +128,6 @@ export default function MealPlanner() {
         totalRecipes--;
         autoAdjust = true;
       }
-      //if no recipe can be reduce, infinite loop prevented
-      counter++;
-      if (counter > updatedPreference.length * 10) break;
     }
 
     if (autoAdjust) {

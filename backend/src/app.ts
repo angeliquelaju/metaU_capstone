@@ -34,6 +34,10 @@ app.use(
   }),
 );
 
+app.get("/", (req, res) => {
+  res.send("backend running");
+});
+
 app.use(authRoutes);
 app.use(recipeRoutes);
 app.use(generatePlanRoutes);

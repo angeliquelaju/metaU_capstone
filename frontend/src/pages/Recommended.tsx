@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 
 const Reccomended = () => {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -39,6 +41,9 @@ const Reccomended = () => {
 
   return (
     <div className="container">
+      <button className="back" onClick={() => navigate(-1)}>
+        back
+      </button>
       <h3>recommended for you</h3>
       {loading ? (
         <p>loading...</p>

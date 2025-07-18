@@ -440,7 +440,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
         }
       }
 
-      const sim = cosineSimilarity(userSaved, otherSaved);
+      const sim = cosineSimilarity(userSaved, otherSaved); //gets similarity score for current user and other user
       if (sim === 0) continue; //skip users who have 0 similarity score
 
       for (const [recipeId, score] of otherSaved.entries()) {
@@ -448,7 +448,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
 
         const existing = scores.get(recipeId);
         //calculating that specific user's contribution to the recipe score 
-        //user similarity * their weight (1,2,3)
+        //user similarity * their weight (1,2,3) for that recipe
         const totalScore = sim * score; 
 
         if (existing) {

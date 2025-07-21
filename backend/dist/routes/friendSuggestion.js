@@ -40,8 +40,27 @@ function ingredientOverlap(ingredientsA, ingredientsB) {
 function ingredientsGrouping(ing) {
     return ing.trim().toLowerCase().replace(/\s+/, " ");
 }
+function recipeMap(saved, liked, ingredientSet) {
+    const map = new Map();
+    for (const recipe of saved) {
+        const likedNSaved = liked.some((r) => r.id === recipe.id);
+        map.set(recipe.id, likedNSaved ? 3 : 1);
+        if (ingredientSet && recipe.ingredients) {
+            recipe.ingredients.forEach((ing) => ingredientSet.add(ingredientsGrouping(ing)));
+        }
+    }
+    for (const likedRecipe of liked) {
+        if (!map.has(likedRecipe.id)) {
+            map.set(likedRecipe.id, 2);
+            if (ingredientSet && likedRecipe.ingredients) {
+                likedRecipe.ingredients.forEach((ing) => ingredientSet.add(ingredientsGrouping(ing)));
+            }
+        }
+    }
+    return map;
+}
 router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     const username = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.username;
     if (!username) {
         res.status(401).json({ error: "user not found" });
@@ -56,35 +75,18 @@ router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaite
             res.status(404).json({ error: "user not found" });
             return;
         }
-        const userSaved = new Map();
         const userIngredients = new Set();
-        for (const recipe of currUser.saved) {
-            const liked = currUser.liked.some((r) => r.id === recipe.id);
-            userSaved.set(recipe.id, liked ? 3 : 1); //assign weights to recipe
-            (_b = recipe.ingredients) === null || _b === void 0 ? void 0 : _b.forEach((ing) => userIngredients.add(ingredientsGrouping(ing)));
-        }
+        const userMap = recipeMap(currUser.saved, currUser.liked, userIngredients);
         const otherUsers = yield prisma_1.default.user.findMany({
             where: { id: { not: currUser.id } },
             include: { saved: true, liked: true },
         });
         const suggestions = otherUsers
             .map((user) => {
-            var _a, _b;
-            const othersSaved = new Map();
             const otherIngredients = new Set();
-            for (const recipe of user.saved) {
-                const liked = user.liked.some((r) => r.id === recipe.id);
-                othersSaved.set(recipe.id, liked ? 3 : 1);
-                (_a = recipe.ingredients) === null || _a === void 0 ? void 0 : _a.forEach((ing) => otherIngredients.add(ingredientsGrouping(ing)));
-            }
-            for (const liked of user.liked) {
-                if (!othersSaved.has(liked.id)) {
-                    othersSaved.set(liked.id, 2);
-                    (_b = liked.ingredients) === null || _b === void 0 ? void 0 : _b.forEach((ing) => otherIngredients.add(ingredientsGrouping(ing)));
-                }
-            }
+            const otherMap = recipeMap(user.saved, user.liked, otherIngredients);
             //calculating similarity score for both recipe and ingredient based
-            const recipeScore = recipeSimilar(userSaved, othersSaved);
+            const recipeScore = recipeSimilar(userMap, otherMap);
             const ingredientScore = ingredientOverlap(userIngredients, otherIngredients);
             const finalScore = 0.7 * recipeScore + 0.3 * ingredientScore;
             return {

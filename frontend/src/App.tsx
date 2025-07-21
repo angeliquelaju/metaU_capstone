@@ -17,11 +17,12 @@ import MealPlanner from "./pages/MealPlanner.tsx";
 import GroceryList from "./pages/GroceryList.tsx";
 import UserProfile from "./pages/UserProfile.tsx";
 import Recommended from "./pages/Recommended.tsx";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
   const [user, setUser] = useState<string | null>(null);
   useEffect(() => {
-    fetch("http://localhost:4000/session", {
+    fetch(`${backendURL}/session`, {
       credentials: "include",
     })
       .then((res) => {

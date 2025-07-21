@@ -80,8 +80,13 @@ export default function MealPlanner() {
           setPlan(null);
         }
         setLoading(false);
-      } catch (error) {
+      } catch (error: any) {
         console.error("error loading saved recipes or plan: ", error);
+        if (
+          error.response?.status === 401 || error.message?.includes("please log in")
+        ) {
+          setMessage("please log in to use the meal planner");
+        }
         setPlan(null);
         setLoading(false);
       }
@@ -209,6 +214,7 @@ export default function MealPlanner() {
   };
 
   if (loading) return <p>loading saved recipes...</p>;
+  if (message === "please log in to use the meal planner") return <p>{message}</p>
 
   return (
     <div>

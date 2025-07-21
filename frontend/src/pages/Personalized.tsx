@@ -31,7 +31,11 @@ const Personalized = () => {
         const data = await res.json();
         setRecipes(data);
       } catch (err: any) {
-        setError(err.message);
+        if (err.message === "please log in") {
+          setError("please log in to see personalized recipes");
+        } else {
+          setError("something went wrong")
+        }
       } finally {
         setLoading(false);
       }
@@ -41,6 +45,7 @@ const Personalized = () => {
 
   if (loading) return <p>loading personalized recipes...</p>;
   if (error) return <p>error: {error}</p>;
+  if (error === "please log in to see personalized recipes") return <p>{error}</p>
 
   return (
     <div className="recipe-container">

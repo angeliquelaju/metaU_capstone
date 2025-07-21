@@ -2,15 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useIngredients } from "../context/IngredientContext.tsx";
 
 const pantryItems = [
-  { name: "garlic", src: "/src/assets/garlic.png", className: "garlic" },
+  { name: "garlic", src: "/public/garlic.png", className: "garlic" },
   {
     name: "salt",
-    src: "/src/assets/salt.png",
+    src: "/public/salt.png",
     className: "salt",
   },
   {
     name: "pepper",
-    src: "/src/assets/pepper.png",
+    src: "/public/pepper.png",
     className: "pepper",
   },
 ];
@@ -32,7 +32,7 @@ const PantryView = () => {
         <button className="back-button" onClick={() => navigate("/kitchen")}>
           ← Back
         </button>
-        <img src="/src/assets/pantry.png" alt="pantry" className="full-image" />
+        <img src="/public/pantry.png" alt="pantry" className="full-image" />
         {pantryItems.map((item, index) => (
           <button
             key={index}
@@ -49,7 +49,7 @@ const PantryView = () => {
           {selected.map((item) => (
             <img
               key={item}
-              src={`/src/assets/${item}.png`}
+              src={`/public/${item}.png`}
               alt={item}
               className="selected-ingredients"
               onClick={() => removeIngredient(item)}

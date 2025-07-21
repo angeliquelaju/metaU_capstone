@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 type Recipe = {
   id: number;
@@ -17,7 +18,7 @@ const Personalized = () => {
     const fetchPersonalized = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:4000/recipes/personalized", {
+        const res = await fetch(`${backendURL}/recipes/personalized`, {
           credentials: "include",
         });
         if (!res.ok) {

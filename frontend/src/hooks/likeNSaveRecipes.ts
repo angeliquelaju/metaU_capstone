@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+
 export const likeNSaveRecipes = () => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [likeIds, setLikeIDs] = useState<Set<string>>(new Set());
@@ -6,10 +8,10 @@ export const likeNSaveRecipes = () => {
     const fetchSavedLiked = async () => {
       try {
         const [savedRes, likedRes] = await Promise.all([
-          fetch("http://localhost:4000/recipes/user", {
+          fetch(`${backendURL}/recipes/user`, {
             credentials: "include",
           }),
-          fetch("http://localhost:4000/recipes/likedRecipes", {
+          fetch(`${backendURL}/recipes/likedRecipes`, {
             credentials: "include",
           }),
         ]);
@@ -39,7 +41,7 @@ export const likeNSaveRecipes = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/recipes/save", {
+      const res = await fetch(`${backendURL}/recipes/save`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -67,7 +69,7 @@ export const likeNSaveRecipes = () => {
   const handleUnsave = async (recipeId: string) => {
     try {
       const res = await fetch(
-        `http://localhost:4000/recipes/remove/${recipeId}`,
+        `${backendURL}/remove/${recipeId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -103,7 +105,7 @@ export const likeNSaveRecipes = () => {
       console.warn("no ingredients found for recipe: ", recipe.id);
     }
 
-    const res = await fetch("http://localhost:4000/recipes/like", {
+    const res = await fetch(`${backendURL}/recipes/like`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -123,7 +125,7 @@ export const likeNSaveRecipes = () => {
   const handleUnlike = async (recipeId: string) => {
     try {
       const res = await fetch(
-        `http://localhost:4000/recipes/unlike/${recipeId}`,
+        `${backendURL}/unlike/${recipeId}`,
         {
           method: "DELETE",
           credentials: "include",

@@ -17,16 +17,20 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const cors = require("cors");
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://metau-capstone.onrender.com", "https://metau-capstone.onrender.com/"],
     credentials: true,
 }));
 app.use(express_1.default.json());
+app.set("trust proxy", 1);
 app.use((0, express_session_1.default)({
     secret: process.env.SESSION_SECRET || "defaultsecret",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 },
+    cookie: { secure: true, httpOnly: true, sameSite: "none", maxAge: 1000 * 60 * 60 },
 }));
+app.get("/", (req, res) => {
+    res.send("backend running");
+});
 app.use(auth_1.default);
 app.use(recipes_1.default);
 app.use(generatePlan_1.default);

@@ -5,7 +5,7 @@ import requireAuth from "../middleware/requireAuth";
 const router = Router();
 
 //similarity = (number of the same recipes) / (number of unique recipes)
-function computeJaccard(setA: Set<string>, setB: Set<string>): number { 
+function computeJaccard(setA: Set<string>, setB: Set<string>): number {
   const intersection = new Set([...setA].filter((x) => setB.has(x))); //same recipes saved
   const union = new Set([...setA, ...setB]); //unique recipes
   return union.size === 0 ? 0 : intersection.size / union.size;
@@ -46,7 +46,7 @@ router.get("/friends/suggestions", requireAuth, async (req, res) => {
       };
     })
     .filter((s) => s.similarity > 0) //filter out users who have no same recipe saved
-    .sort((a, b) => b.similarity - a.similarity) //sort from highest similarity 
+    .sort((a, b) => b.similarity - a.similarity) //sort from highest similarity
     .slice(0, 5); //top 5 users with the highest similarity
 
   res.json(suggestions);

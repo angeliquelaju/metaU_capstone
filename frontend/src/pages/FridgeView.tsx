@@ -53,11 +53,11 @@ const FridgeView = () => {
         <button
           className="pantry-button"
           onClick={() => navigate("/pantry-view")}
-        ></button>
+        >pantry</button>
         <button
           className="recipe-button"
           onClick={() => navigate("/recipes")}
-        ></button>
+        >generate recipe</button>
       </div>
     </div>
   );

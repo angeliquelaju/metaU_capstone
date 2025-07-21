@@ -20,7 +20,7 @@ export default function MealPlanner() {
   >([]);
 
   const [mealCounts, setMealCounts] = useState<Record<string, number>>(() =>
-    Object.fromEntries(DAYS.map((d) => [d, 3]))
+    Object.fromEntries(DAYS.map((d) => [d, 3])),
   );
 
   const [recipePreferences, setRecipePreferences] = useState<
@@ -60,7 +60,7 @@ export default function MealPlanner() {
           recipesRes.json(),
           goalsRes.json(),
           historyRes.json(),
-        ])
+        ]);
         setSavedRecipes(recipes);
         setGoals(goalsData);
         setPlanHistory(historyData);
@@ -69,7 +69,7 @@ export default function MealPlanner() {
             title: r.title,
             spoonacularId: parseInt(r.id),
             servings: 1,
-          }))
+          })),
         );
         if (planRes.ok) {
           const planData = await planRes.json();
@@ -91,48 +91,51 @@ export default function MealPlanner() {
   const handleGenerate = async () => {
     const totalMeals = Object.values(mealCounts).reduce(
       (sum, count) => sum + count,
-      0
+      0,
     );
-
     let totalRecipes = recipePreferences.reduce(
       (sum, recipe) => sum + recipe.servings,
-      0
+      0,
     );
 
     let autoAdjust = false;
     const updatedPreference = [...recipePreferences];
+    let counter = 0;
 
-    if (totalRecipes < totalMeals) {
-      let index = 0;
-      let counter = 0;
-      const max_attempts = 1000;
-      while (totalRecipes < totalMeals && counter < max_attempts)  {
-        const recipe = updatedPreference[index % updatedPreference.length];
-        if (recipe.servings < 10) {
-          recipe.servings++;
-          totalRecipes++;
-          autoAdjust = true;
-        }
-        index++;
+    //increase servings based on recipe that has the least number of servings
+    while (totalRecipes < totalMeals) {
+      const recipe = updatedPreference.reduce((min, curr) =>
+        curr.servings < min.servings ? curr : min,
+      );
+
+      recipe.servings++;
+      totalRecipes++;
+      autoAdjust = true;
+
+      //prevents infinite loop
+      counter++;
+      if (counter > updatedPreference.length * 10) break;
+    }
+
+    //decrease servings based on recipe that has the most number of servings
+    while (totalRecipes > totalMeals) {
+      const recipe = updatedPreference.reduce((max, curr) =>
+        curr.servings > max.servings ? curr : max,
+      );
+
+      if (recipe.servings > 0) {
+        recipe.servings--;
+        totalRecipes--;
+        autoAdjust = true;
       }
-    } else if (totalRecipes > totalMeals) {
-      let index = 0;
-      let counter = 0;
-      const max_attempts = 1000;
-      while (totalRecipes > totalMeals && counter < max_attempts) {
-        const recipe = updatedPreference[index % updatedPreference.length];
-        if (recipe.servings > 1) {
-          recipe.servings--;
-          totalRecipes--;
-          autoAdjust = true;
-        }
-        index++;
-      }
+      //if no recipe can be reduce, infinite loop prevented
+      counter++;
+      if (counter > updatedPreference.length * 10) break;
     }
 
     if (autoAdjust) {
       setMessage(
-        `adjusted recipe servings automatically to match ${totalMeals} meals.`
+        `adjusted recipe servings automatically to match ${totalMeals} meals.`,
       );
       setRecipePreferences(updatedPreference);
       return;
@@ -156,19 +159,20 @@ export default function MealPlanner() {
   const handlePlanHistory = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedPlan = planHistory.find((p) => p.id === +e.target.value);
     if (!selectedPlan) return;
-    
+
     const parsedPlan = selectedPlan.plan as {
       day: string;
-      meals: {title: string; spoonacularId: number; servings: number}[];
+      meals: { title: string; spoonacularId: number; servings: number }[];
     }[];
 
     const dayMealCounts: Record<string, number> = {};
     for (const day of DAYS) {
-      dayMealCounts[day] = parsedPlan.find((d) => d.day === day)?.meals.length || 0;
+      dayMealCounts[day] =
+        parsedPlan.find((d) => d.day === day)?.meals.length || 0;
     }
     setMealCounts(dayMealCounts);
 
-    const recipeMap = new Map<number, {title: string; servings: number}>();
+    const recipeMap = new Map<number, { title: string; servings: number }>();
     for (const day of parsedPlan) {
       for (const meal of day.meals) {
         const existing = recipeMap.get(meal.spoonacularId);
@@ -187,7 +191,7 @@ export default function MealPlanner() {
       title: string;
       spoonacularId: number;
       servings: number;
-    }[] = []
+    }[] = [];
 
     for (const recipe of savedRecipes) {
       const id = parseInt(recipe.id);
@@ -199,9 +203,9 @@ export default function MealPlanner() {
       });
       recipeMap.delete(id);
     }
-    
-    for (const [id, {title, servings}] of recipeMap.entries()) {
-      populatePreferences.push({title, spoonacularId: id, servings});
+
+    for (const [id, { title, servings }] of recipeMap.entries()) {
+      populatePreferences.push({ title, spoonacularId: id, servings });
     }
     setRecipePreferences(populatePreferences);
   };
@@ -217,13 +221,15 @@ export default function MealPlanner() {
             <div className="nutrition-overview">
               <h3>weekly nutrition</h3>
               <p>
-                calories: {Math.round(nutrition.weekly.calories)} / {goals.calories} 
+                calories: {Math.round(nutrition.weekly.calories)} /{" "}
+                {goals.calories}
                 {nutrition.weekly.calories >= goals.calories
                   ? " yes ✅"
                   : " no ❌"}
               </p>
               <p>
-                protein: {Math.round(nutrition.weekly.protein)} / {goals.protein} 
+                protein: {Math.round(nutrition.weekly.protein)} /{" "}
+                {goals.protein}
                 {nutrition.weekly.protein >= goals.protein
                   ? " yes ✅"
                   : " no ❌"}
@@ -294,8 +300,9 @@ export default function MealPlanner() {
                 )}
                 {nutrition?.daily?.[dayPlan.day] && (
                   <small>
-                    {Math.round(nutrition.daily[dayPlan.day].calories)} kcal, 
-                    {Math.round(nutrition.daily[dayPlan.day].protein)} g protein, 
+                    {Math.round(nutrition.daily[dayPlan.day].calories)} kcal,
+                    {Math.round(nutrition.daily[dayPlan.day].protein)} g
+                    protein,
                     {Math.round(nutrition.daily[dayPlan.day].carbs)} g carbs
                   </small>
                 )}
@@ -311,8 +318,7 @@ export default function MealPlanner() {
           {planHistory.length > 0 && (
             <>
               <h4>use previous plan</h4>
-              <select
-                onChange={handlePlanHistory}>
+              <select onChange={handlePlanHistory}>
                 <option value="">pick a previous plan</option>
                 {planHistory.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -329,7 +335,7 @@ export default function MealPlanner() {
                       title: r.title,
                       spoonacularId: parseInt(r.id),
                       servings: 1,
-                    }))
+                    })),
                   );
                 }}
               >
@@ -340,7 +346,7 @@ export default function MealPlanner() {
           <h3>meals per day</h3>
           {DAYS.map((day) => (
             <div key={day}>
-              {day}: 
+              {day}:
               <input
                 type="number"
                 value={mealCounts[day]}

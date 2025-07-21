@@ -15,7 +15,7 @@ import RecipeDetail from "./pages/RecipeDetail.tsx";
 import Personalized from "./pages/Personalized.tsx";
 import MealPlanner from "./pages/MealPlanner.tsx";
 import GroceryList from "./pages/GroceryList.tsx";
-import UserProfile from "./pages/UserProfile.tsx"
+import UserProfile from "./pages/UserProfile.tsx";
 
 function App() {
   const [user, setUser] = useState<string | null>(null);

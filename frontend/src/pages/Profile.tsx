@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FriendSuggestion from "../components/FriendSuggestion";
+import RecipeCard from "../components/RecipeCard";
+import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 
 function Profile({
   user,
@@ -9,6 +11,15 @@ function Profile({
   user: string;
   setUser: (u: string | null) => void;
 }) {
+  const {
+    savedIds,
+    likeIds,
+    handleSave,
+    handleUnsave,
+    handleLike,
+    handleUnlike,
+  } = likeNSaveRecipes();
+
   const [saved, setSaved] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,7 +38,7 @@ function Profile({
         const res = await fetch("http://localhost:4000/recipes/user", {
           credentials: "include",
         });
-        if (!res.ok) throw new Error("failed to fetch saved recipes");
+        if (!res.ok) throw new Error("failed to fetch current user data");
         const data = await res.json();
         setSaved(data);
       } catch (err: any) {
@@ -41,33 +52,35 @@ function Profile({
 
   return (
     <div className="container">
-      <h2>Welcome, {user}</h2>
-      <button onClick={handleLogout}>Log out</button>
-      <h3>Saved Recipes</h3>
+      <h2>welcome, {user}</h2>
+      <button onClick={handleLogout}>log out</button>
+      <h3>saved recipes</h3>
       {loading ? (
         <p>loading saved recipes...</p>
       ) : error ? (
-        <p>Error: {error}</p>
+        <p>error: {error}</p>
       ) : saved.length === 0 ? (
         <p>no recipes have been saved</p>
       ) : (
         <div className="recipe-grid">
-          {saved.map((recipe) => (
-            <div key={recipe.id} className="recipe-card">
-              <img
-                src={recipe.image}
-                alt={recipe.title}
-                className="recipe-image"
+          {saved.map((recipe) => {
+            const isSaved = savedIds.has(recipe.id.toString());
+            const isLiked = likeIds.has(recipe.id.toString());
+            return (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                isSaved={isSaved}
+                isLiked={isLiked}
+                onSave={() => handleSave(recipe)}
+                onUnsave={() => handleUnsave(recipe.id.toString())}
+                onLike={() => handleLike(recipe)}
+                onUnlike={() => handleUnlike(recipe.id.toString())}
+                showNutrition={false}
+                showIngredientMatch={false}
               />
-              <h4>{recipe.title}</h4>
-              <button
-                className="view-button"
-                onClick={() => navigate(`/recipes/${recipe.id}`)}
-              >
-                View Recipe
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
       <FriendSuggestion />

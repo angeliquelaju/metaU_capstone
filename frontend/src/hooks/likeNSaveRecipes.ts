@@ -69,7 +69,7 @@ export const likeNSaveRecipes = () => {
   const handleUnsave = async (recipeId: string) => {
     try {
       const res = await fetch(
-        `${backendURL}/remove/${recipeId}`,
+        `${backendURL}/recipes/remove/${recipeId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -125,7 +125,7 @@ export const likeNSaveRecipes = () => {
   const handleUnlike = async (recipeId: string) => {
     try {
       const res = await fetch(
-        `${backendURL}/unlike/${recipeId}`,
+        `${backendURL}/recipes/unlike/${recipeId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -142,7 +142,7 @@ export const likeNSaveRecipes = () => {
         alert(data.error || "failed to unlike");
       }
     } catch (error) {
-      alert("something went wrong while liking");
+      alert("something went wrong while unliking");
     }
   };
   return {

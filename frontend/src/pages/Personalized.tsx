@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 import RecipeCard from "../components/RecipeCard";
@@ -15,7 +14,6 @@ const Personalized = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   const {
     savedIds,
     likeIds,

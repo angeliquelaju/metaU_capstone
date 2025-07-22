@@ -1,6 +1,7 @@
 import { Router } from "express";
 import prisma from "../prisma";
 import requireAuth from "../middleware/requireAuth";
+import { recipeMap } from "../utils/recipeMap";
 
 const router = Router();
 
@@ -32,42 +33,6 @@ function ingredientOverlap(
   );
   const union = new Set([...ingredientsA, ...ingredientsB]);
   return union.size === 0 ? 0 : intersection.size / union.size;
-}
-
-//group ingredient words (ex. chicken breast -> chicken)
-function ingredientsGrouping(ing: string): string[] {
-  return ing.trim().toLowerCase().split(/\s+/);
-}
-
-function recipeMap(
-  saved: { id: string; ingredients?: string[] }[],
-  liked: { id: string; ingredients?: string[] }[],
-  ingredientSet?: Set<string>
-): Map<string, number> {
-  const map = new Map<string, number>();
-
-  for (const recipe of saved) {
-    const likedNSaved = liked.some((r) => r.id === recipe.id);
-    map.set(recipe.id, likedNSaved ? 3 : 1);
-    if (ingredientSet && recipe.ingredients) {
-      recipe.ingredients.forEach((ing) => {
-        const words = ingredientsGrouping(ing);
-        words.forEach((word) => ingredientSet.add(word));
-      });
-    }
-  }
-  for (const likedRecipe of liked) {
-    if (!map.has(likedRecipe.id)) {
-      map.set(likedRecipe.id, 2);
-      if (ingredientSet && likedRecipe.ingredients) {
-        likedRecipe.ingredients.forEach((ing) => {
-          const words = ingredientsGrouping(ing);
-          words.forEach((word) => ingredientSet.add(word));
-        });
-      }
-    }
-  }
-  return map;
 }
 
 router.get("/friends/suggestions", requireAuth, async (req, res) => {

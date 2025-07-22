@@ -302,7 +302,7 @@ router.get(
 
       //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) =>
-        ing.toLowerCase().split(/\s+/),
+        ing.trim().toLowerCase().split(/\s+/),
       );
 
       const frequency: Record<string, number> = {};

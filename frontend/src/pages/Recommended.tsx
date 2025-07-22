@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Reccomended = () => {
@@ -36,7 +37,7 @@ const Reccomended = () => {
     fetchRecommendations();
   }, []);
 
-  if (loading) return <p>loading suggestions...</p>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
   if (recipes.length === 0) return <p>no recommended recipes found</p>;
 
@@ -47,7 +48,7 @@ const Reccomended = () => {
       </button>
       <h3>recommended for you</h3>
       {loading ? (
-        <p>loading...</p>
+        <LoadingSpinner />
       ) : error ? (
         <p>error: {error}</p>
       ) : recipes.length === 0 ? (

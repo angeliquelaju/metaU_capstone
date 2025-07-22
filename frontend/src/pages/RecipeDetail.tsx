@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
 
 const RecipeDetail = () => {
@@ -27,7 +28,7 @@ const RecipeDetail = () => {
     fetchRecipes();
   }, [id]);
 
-  if (loading) return <p>Loading recipes</p>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <p>Error: {error}</p>;
   if (!recipe) return null;
 

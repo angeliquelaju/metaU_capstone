@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 type Recipe = {
@@ -43,7 +44,7 @@ const Personalized = () => {
     fetchPersonalized();
   }, []);
 
-  if (loading) return <p>loading personalized recipes...</p>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
   if (error === "please log in to see personalized recipes") return <p>{error}</p>
 

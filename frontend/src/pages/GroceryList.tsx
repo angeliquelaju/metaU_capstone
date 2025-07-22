@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { GroceryItem } from "../types";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function GroceryList() {
@@ -34,7 +35,7 @@ export default function GroceryList() {
     load();
   }, []);
 
-  if (loading) return <p>loading ...</p>;
+  if (loading) return <LoadingSpinner />;
   if (error === "please log in") return <p>please log in</p>
   if (error) return <p>error: {error}</p>;
 

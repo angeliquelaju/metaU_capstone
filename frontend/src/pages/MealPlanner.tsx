@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const DAYS = [
@@ -213,7 +214,7 @@ export default function MealPlanner() {
     setRecipePreferences(populatePreferences);
   };
 
-  if (loading) return <p>loading saved recipes...</p>;
+  if (loading) return <LoadingSpinner />;
   if (message === "please log in to use the meal planner") return <p>{message}</p>
 
   return (

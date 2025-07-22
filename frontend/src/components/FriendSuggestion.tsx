@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "./LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface Suggestion {
@@ -32,7 +33,7 @@ const FriendSuggestion: React.FunctionComponent = () => {
     };
     fetchSuggestions();
   }, []);
-  if (loading) return <p>loading suggestions...</p>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
   if (suggestions.length === 0) return <p>no similar users found</p>;
 

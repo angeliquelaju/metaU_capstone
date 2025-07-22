@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FriendSuggestion from "../components/FriendSuggestion";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function Profile({
@@ -57,7 +58,7 @@ function Profile({
       <button onClick={handleLogout}>log out</button>
       <h3>saved recipes</h3>
       {loading ? (
-        <p>loading saved recipes...</p>
+        <LoadingSpinner />
       ) : error ? (
         <p>error: {error}</p>
       ) : saved.length === 0 ? (

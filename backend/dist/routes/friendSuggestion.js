@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../prisma"));
 const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
+const recipeMap_1 = require("../utils/recipeMap");
 const router = (0, express_1.Router)();
 //calculates recipe similarity using weighted jaccard similarity
 //weight: 1 (if saved), 2 (if liked), 3 (if saved and liked)
@@ -36,29 +37,6 @@ function ingredientOverlap(ingredientsA, ingredientsB) {
     const union = new Set([...ingredientsA, ...ingredientsB]);
     return union.size === 0 ? 0 : intersection.size / union.size;
 }
-//group ingredient words (ex. chicken breast -> chicken)
-function ingredientsGrouping(ing) {
-    return ing.trim().toLowerCase().replace(/\s+/, " ");
-}
-function recipeMap(saved, liked, ingredientSet) {
-    const map = new Map();
-    for (const recipe of saved) {
-        const likedNSaved = liked.some((r) => r.id === recipe.id);
-        map.set(recipe.id, likedNSaved ? 3 : 1);
-        if (ingredientSet && recipe.ingredients) {
-            recipe.ingredients.forEach((ing) => ingredientSet.add(ingredientsGrouping(ing)));
-        }
-    }
-    for (const likedRecipe of liked) {
-        if (!map.has(likedRecipe.id)) {
-            map.set(likedRecipe.id, 2);
-            if (ingredientSet && likedRecipe.ingredients) {
-                likedRecipe.ingredients.forEach((ing) => ingredientSet.add(ingredientsGrouping(ing)));
-            }
-        }
-    }
-    return map;
-}
 router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const username = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.username;
@@ -76,7 +54,7 @@ router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaite
             return;
         }
         const userIngredients = new Set();
-        const userMap = recipeMap(currUser.saved, currUser.liked, userIngredients);
+        const userMap = (0, recipeMap_1.recipeMap)(currUser.saved, currUser.liked, userIngredients);
         const otherUsers = yield prisma_1.default.user.findMany({
             where: { id: { not: currUser.id } },
             include: { saved: true, liked: true },
@@ -84,7 +62,7 @@ router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaite
         const suggestions = otherUsers
             .map((user) => {
             const otherIngredients = new Set();
-            const otherMap = recipeMap(user.saved, user.liked, otherIngredients);
+            const otherMap = (0, recipeMap_1.recipeMap)(user.saved, user.liked, otherIngredients);
             //calculating similarity score for both recipe and ingredient based
             const recipeScore = recipeSimilar(userMap, otherMap);
             const ingredientScore = ingredientOverlap(userIngredients, otherIngredients);

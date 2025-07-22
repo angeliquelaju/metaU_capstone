@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+import RecipeCard from "../components/RecipeCard";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 type Recipe = {
@@ -14,6 +16,14 @@ const Personalized = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const {
+    savedIds,
+    likeIds,
+    handleSave,
+    handleUnsave,
+    handleLike,
+    handleUnlike,
+  } = likeNSaveRecipes();
 
   useEffect(() => {
     const fetchPersonalized = async () => {
@@ -25,7 +35,7 @@ const Personalized = () => {
         if (!res.ok) {
           const errData = await res.json();
           throw new Error(
-            errData.error || "failed to fetch personalized recipes",
+            errData.error || "failed to fetch personalized recipes"
           );
         }
 
@@ -35,7 +45,7 @@ const Personalized = () => {
         if (err.message === "please log in") {
           setError("please log in to see personalized recipes");
         } else {
-          setError("something went wrong")
+          setError("something went wrong");
         }
       } finally {
         setLoading(false);
@@ -46,7 +56,8 @@ const Personalized = () => {
 
   if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
-  if (error === "please log in to see personalized recipes") return <p>{error}</p>
+  if (error === "please log in to see personalized recipes")
+    return <p>{error}</p>;
 
   return (
     <div className="recipe-container">
@@ -55,22 +66,25 @@ const Personalized = () => {
         {recipes.length === 0 ? (
           <p>no recs available</p>
         ) : (
-          recipes.map((recipe) => (
-            <div key={recipe.id} className="recipe-card">
-              <img
-                src={recipe.image}
-                alt={recipe.title}
-                className="recipe-image"
+          recipes.map((recipe: any) => {
+            const isSaved = savedIds.has(recipe.id.toString());
+            const isLiked = likeIds.has(recipe.id.toString());
+            const showNutrition = !!recipe.nutrition;
+            return (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                isSaved={isSaved}
+                isLiked={isLiked}
+                onSave={() => handleSave(recipe)}
+                onUnsave={() => handleUnsave(recipe.id.toString())}
+                onLike={() => handleLike(recipe)}
+                onUnlike={() => handleUnlike(recipe.id.toString())}
+                showNutrition={showNutrition}
+                showIngredientMatch={false}
               />
-              <h3 className="recipe-title">{recipe.title}</h3>
-              <button
-                className="view-button"
-                onClick={() => navigate(`/recipes/${recipe.id}`)}
-              >
-                View Recipe
-              </button>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

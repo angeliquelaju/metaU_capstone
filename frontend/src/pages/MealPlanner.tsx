@@ -22,7 +22,7 @@ export default function MealPlanner() {
   >([]);
 
   const [mealCounts, setMealCounts] = useState<Record<string, number>>(() =>
-    Object.fromEntries(DAYS.map((d) => [d, 3])),
+    Object.fromEntries(DAYS.map((d) => [d, 3]))
   );
 
   const [recipePreferences, setRecipePreferences] = useState<
@@ -71,7 +71,7 @@ export default function MealPlanner() {
             title: r.title,
             spoonacularId: parseInt(r.id),
             servings: 1,
-          })),
+          }))
         );
         if (planRes.ok) {
           const planData = await planRes.json();
@@ -84,7 +84,8 @@ export default function MealPlanner() {
       } catch (error: any) {
         console.error("error loading saved recipes or plan: ", error);
         if (
-          error.response?.status === 401 || error.message?.includes("please log in")
+          error.response?.status === 401 ||
+          error.message?.includes("please log in")
         ) {
           setMessage("please log in to use the meal planner");
         }
@@ -98,11 +99,11 @@ export default function MealPlanner() {
   const handleGenerate = async () => {
     const totalMeals = Object.values(mealCounts).reduce(
       (sum, count) => sum + count,
-      0,
+      0
     );
     let totalRecipes = recipePreferences.reduce(
       (sum, recipe) => sum + recipe.servings,
-      0,
+      0
     );
 
     let autoAdjust = false;
@@ -112,7 +113,7 @@ export default function MealPlanner() {
     //increase servings based on recipe that has the least number of servings
     while (totalRecipes < totalMeals) {
       const recipe = updatedPreference.reduce((min, curr) =>
-        curr.servings < min.servings ? curr : min,
+        curr.servings < min.servings ? curr : min
       );
 
       recipe.servings++;
@@ -127,7 +128,7 @@ export default function MealPlanner() {
     //decrease servings based on recipe that has the most number of servings
     while (totalRecipes > totalMeals) {
       const recipe = updatedPreference.reduce((max, curr) =>
-        curr.servings > max.servings ? curr : max,
+        curr.servings > max.servings ? curr : max
       );
 
       if (recipe.servings > 0) {
@@ -139,7 +140,7 @@ export default function MealPlanner() {
 
     if (autoAdjust) {
       setMessage(
-        `adjusted recipe servings automatically to match ${totalMeals} meals.`,
+        `adjusted recipe servings automatically to match ${totalMeals} meals.`
       );
       setRecipePreferences(updatedPreference);
       return;
@@ -215,7 +216,8 @@ export default function MealPlanner() {
   };
 
   if (loading) return <LoadingSpinner />;
-  if (message === "please log in to use the meal planner") return <p>{message}</p>
+  if (message === "please log in to use the meal planner")
+    return <p>{message}</p>;
 
   return (
     <div>
@@ -322,6 +324,49 @@ export default function MealPlanner() {
         <>
           {planHistory.length > 0 && (
             <>
+              <div className="nutrition-overview">
+                <h4>set weekly goals:</h4>
+                <input
+                  type="number"
+                  value={goals.calories}
+                  onChange={(e) =>
+                    setGoals({ ...goals, calories: +e.target.value })
+                  }
+                  placeholder="weekly calories"
+                />
+                kcal
+                <input
+                  type="number"
+                  value={goals.protein}
+                  onChange={(e) =>
+                    setGoals({ ...goals, protein: +e.target.value })
+                  }
+                  placeholder="weekly protein"
+                />
+                g
+                <input
+                  type="number"
+                  value={goals.carbs}
+                  onChange={(e) =>
+                    setGoals({ ...goals, carbs: +e.target.value })
+                  }
+                  placeholder="weekly carbs"
+                />
+                g
+                <button
+                  className="saveGoals-button"
+                  onClick={async () => {
+                    await fetch(`${backendURL}/user/goals`, {
+                      method: "POST",
+                      credentials: "include",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(goals),
+                    });
+                  }}
+                >
+                  save goals
+                </button>
+              </div>
               <h4>use previous plan</h4>
               <select onChange={handlePlanHistory}>
                 <option value="">pick a previous plan</option>
@@ -340,7 +385,7 @@ export default function MealPlanner() {
                       title: r.title,
                       spoonacularId: parseInt(r.id),
                       servings: 1,
-                    })),
+                    }))
                   );
                 }}
               >

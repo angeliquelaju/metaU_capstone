@@ -5,6 +5,8 @@ interface Suggestion {
   id: number;
   username: string;
   similarity: number;
+  recipeScore: number;
+  ingredientScore: number;
 }
 
 const FriendSuggestion: React.FunctionComponent = () => {
@@ -40,9 +42,13 @@ const FriendSuggestion: React.FunctionComponent = () => {
         {suggestions.map((s) => (
           <li key={s.id}>
             <Link to={`/user/${s.username}`}>
-              <strong>{s.username}</strong> - {Math.round(s.similarity * 100)}%
-              match
+              <strong>{s.username}</strong>
             </Link>
+             - <b>{Math.round(s.similarity * 100)}% match</b>
+             <div className="score-details">
+                recipes: <b>{Math.round(s.recipeScore * 100)}% </b>
+                ingredients: <b>{Math.round(s.ingredientScore * 100)}%</b>
+             </div>
           </li>
         ))}
       </ul>

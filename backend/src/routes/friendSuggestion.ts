@@ -35,33 +35,35 @@ function ingredientOverlap(
 }
 
 //group ingredient words (ex. chicken breast -> chicken)
-function ingredientsGrouping(ing: string): string {
-  return ing.trim().toLowerCase().replace(/\s+/, " ");
+function ingredientsGrouping(ing: string): string[] {
+  return ing.trim().toLowerCase().split(/\s+/);
 }
 
 function recipeMap(
-  saved: {id: string; ingredients?:string[]}[],
-  liked: {id: string; ingredients?:string[]}[],
+  saved: { id: string; ingredients?: string[] }[],
+  liked: { id: string; ingredients?: string[] }[],
   ingredientSet?: Set<string>
-) : Map<string, number> {
+): Map<string, number> {
   const map = new Map<string, number>();
 
   for (const recipe of saved) {
     const likedNSaved = liked.some((r) => r.id === recipe.id);
     map.set(recipe.id, likedNSaved ? 3 : 1);
     if (ingredientSet && recipe.ingredients) {
-      recipe.ingredients.forEach((ing) => 
-        ingredientSet.add(ingredientsGrouping(ing))
-      );
+      recipe.ingredients.forEach((ing) => {
+        const words = ingredientsGrouping(ing);
+        words.forEach((word) => ingredientSet.add(word));
+      });
     }
   }
   for (const likedRecipe of liked) {
     if (!map.has(likedRecipe.id)) {
       map.set(likedRecipe.id, 2);
       if (ingredientSet && likedRecipe.ingredients) {
-        likedRecipe.ingredients.forEach((ing) => 
-          ingredientSet.add(ingredientsGrouping(ing))
-        );
+        likedRecipe.ingredients.forEach((ing) => {
+          const words = ingredientsGrouping(ing);
+          words.forEach((word) => ingredientSet.add(word));
+        });
       }
     }
   }
@@ -87,11 +89,7 @@ router.get("/friends/suggestions", requireAuth, async (req, res) => {
     }
 
     const userIngredients = new Set<string>();
-    const userMap = recipeMap(
-      currUser.saved,
-      currUser.liked,
-      userIngredients
-    );
+    const userMap = recipeMap(currUser.saved, currUser.liked, userIngredients);
 
     const otherUsers = await prisma.user.findMany({
       where: { id: { not: currUser.id } },
@@ -100,11 +98,7 @@ router.get("/friends/suggestions", requireAuth, async (req, res) => {
     const suggestions = otherUsers
       .map((user) => {
         const otherIngredients = new Set<string>();
-        const otherMap = recipeMap(
-          user.saved,
-          user.liked,
-          otherIngredients
-        )
+        const otherMap = recipeMap(user.saved, user.liked, otherIngredients);
 
         //calculating similarity score for both recipe and ingredient based
         const recipeScore = recipeSimilar(userMap, otherMap);

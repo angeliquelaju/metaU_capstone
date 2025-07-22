@@ -418,7 +418,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
 
     const scores: Map<
       string,
-      { recipe: any; totalWeighted: number; totalSimilarity: number }
+      { recipe: any; totalWeighted: number }
     > = new Map();
 
     for (const user of otherUsers) {
@@ -455,18 +455,16 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
         if (existing) {
           //total of all the score and other user similarities
           existing.totalWeighted += totalScore;
-          existing.totalSimilarity += sim;
         } else {
           scores.set(recipeId, {
             recipe: otherRecipe.get(recipeId),
             totalWeighted: totalScore,
-            totalSimilarity: sim,
           });
         }
       }
     }
     const topRecipes = [...scores.values()]
-      .map(({ recipe, totalWeighted, totalSimilarity }) => {
+      .map(({ recipe, totalWeighted }) => {
         //make the score consistent by dividing it by the maximum weight (3). total weight can be over 1
         //cause there are multiple user scores added together. max the score at 100 even if totalWeighted is over 100
         const percentage = Math.min((totalWeighted / 3) * 100, 100);

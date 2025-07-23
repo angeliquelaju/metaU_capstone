@@ -12,8 +12,8 @@ export function recipeSimilar(
   for (const id of allRecipeIds) {
     const a = mapA.get(id) || 0;
     const b = mapB.get(id) || 0;
-    intersection += Math.min(a, b); // both users saved recipes
-    union += Math.max(a, b); //unique recipes
+    intersection += Math.min(a, b); //min interaction of that recipe
+    union += Math.max(a, b); //max interaction of that recipe
   }
   return union === 0 ? 0 : intersection / union;
 }
@@ -23,9 +23,11 @@ export function ingredientOverlap(
   ingredientsA: Set<string>,
   ingredientsB: Set<string>
 ): number {
+  // both users saved ingredients  
   const intersection = new Set(
     [...ingredientsA].filter((ing) => ingredientsB.has(ing))
   );
+  //unique recipes
   const union = new Set([...ingredientsA, ...ingredientsB]);
   return union.size === 0 ? 0 : intersection.size / union.size;
 }

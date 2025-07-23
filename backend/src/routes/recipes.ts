@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import requireAuth from "../middleware/requireAuth";
 import prisma from "../prisma";
 import { recipeMap } from "../utils/recipeMap";
+import { top5Users } from "../utils/similarity";
 
 import "express-session";
 declare module "express-session" {
@@ -393,11 +394,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
 
     //current user's interactions
     const userSaved = recipeMap(currUser.saved, currUser.liked);
-    const seenRecipes = new Set<string>();
-
-    for (const recipeId of userSaved.keys()) {
-      seenRecipes.add(recipeId);
-    }
+    const seenRecipes = new Set(userSaved.keys());
 
     //other user's interactions
     const otherUsers = await prisma.user.findMany({
@@ -405,12 +402,14 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
       include: { saved: true, liked: true },
     });
 
+    const topUsers = top5Users(currUser, otherUsers);
+
     const scores: Map<
       string,
       { recipe: any; totalWeighted: number; numUsers: Set<string> }
     > = new Map();
 
-    for (const user of otherUsers) {
+    for (const { user } of topUsers) {
       //map of weights
       const otherSaved = recipeMap(user.saved, user.liked);
       //map of recipeIds and its information (title, ingredients, etc)

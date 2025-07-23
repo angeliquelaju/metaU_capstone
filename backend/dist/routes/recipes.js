@@ -319,14 +319,14 @@ router.get("/recipes/user/:username", (req, res) => __awaiter(void 0, void 0, vo
 //how much recipes a user has interacted with does not effect the score as it uses magnitude
 function cosineSimilarity(a, b) {
     const allRecipeIds = new Set([...a.keys(), ...b.keys()]);
-    let dot = 0; //
+    let dot = 0;
     let magnitudeA = 0;
     let magnitudeB = 0;
     for (const id of allRecipeIds) {
         const valA = a.get(id) || 0;
         const valB = b.get(id) || 0;
         dot += valA * valB; //calculate how much users interact with the same recipe
-        //overall interaction for that user 
+        //overall interaction for that user
         magnitudeA += valA ** 2;
         magnitudeB += valB ** 2;
     }
@@ -371,7 +371,7 @@ router.get("/recipes/recommended", requireAuth_1.default, (req, res) => __awaite
             for (const recipe of user.saved) {
                 otherRecipe.set(recipe.id, recipe);
             }
-            //adding liked-only recipes that were not saved 
+            //adding liked-only recipes that were not saved
             for (const liked of user.liked) {
                 if (!otherRecipe.has(liked.id)) {
                     otherRecipe.set(liked.id, liked);
@@ -384,26 +384,29 @@ router.get("/recipes/recommended", requireAuth_1.default, (req, res) => __awaite
                 if (seenRecipes.has(recipeId))
                     continue; //skip receipes that the current user has interacted with
                 const existing = scores.get(recipeId);
-                //calculating that specific user's contribution to the recipe score 
+                //calculating that specific user's contribution to the recipe score
                 //user similarity * their weight (1,2,3) for that recipe
                 const totalScore = sim * score;
                 if (existing) {
                     //total of all the score and other user similarities
                     existing.totalWeighted += totalScore;
+                    existing.numUsers.add(user.id.toString());
                 }
                 else {
                     scores.set(recipeId, {
                         recipe: otherRecipe.get(recipeId),
                         totalWeighted: totalScore,
+                        numUsers: new Set([user.id.toString()]),
                     });
                 }
             }
         }
         const topRecipes = [...scores.values()]
-            .map(({ recipe, totalWeighted }) => {
+            .map(({ recipe, totalWeighted, numUsers }) => {
             //make the score consistent by dividing it by the maximum weight (3). total weight can be over 1
             //cause there are multiple user scores added together. max the score at 100 even if totalWeighted is over 100
-            const percentage = Math.min((totalWeighted / 3) * 100, 100);
+            const denominator = 3 * numUsers.size;
+            const percentage = denominator > 0 ? (totalWeighted / denominator) * 100 : 0;
             return Object.assign(Object.assign({}, recipe), { score: parseFloat(percentage.toFixed(2)) });
         })
             .sort((a, b) => b.score - a.score);

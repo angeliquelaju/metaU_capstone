@@ -32,7 +32,7 @@ const Recipes = () => {
     handleUnlike,
   } = likeNSaveRecipes();
 
-  const MAX_MISSING_INGREDIENTS = 5;
+  const MAX_MISSING_INGREDIENTS = 10;
 
   //fetch recipe list (default before filters)
   const fetchByIngredients = async () => {
@@ -41,7 +41,7 @@ const Recipes = () => {
     try {
       const query = selected.join(",");
       const res = await fetch(
-        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOON_KEY}&ingredients=${query}&number=25&ranking=2&ignorePantry=false`,
+        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOON_KEY}&ingredients=${query}&number=25&ranking=1&ignorePantry=false`,
       );
       if (!res.ok) throw new Error("failed to fetch recipes");
       const data = await res.json();
@@ -63,7 +63,7 @@ const Recipes = () => {
     try {
       const params = new URLSearchParams();
       params.append("apiKey", `${SPOON_KEY}`);
-      params.append("ranking", "2"); //prioritizes minimizing missing ingredients first
+      params.append("ranking", "1"); //prioritizes maximizing ingredients first
       params.append("number", "25"); //maximum number of recipes to return
       params.append("addRecipeNutrition", "true");
       params.append("includeIngredients", selected.join(","));

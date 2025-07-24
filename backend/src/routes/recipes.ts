@@ -3,7 +3,6 @@ import requireAuth from "../middleware/requireAuth";
 import prisma from "../prisma";
 
 import "express-session";
-import { all } from "axios";
 declare module "express-session" {
   interface SessionData {
     user?: { username: string };
@@ -71,7 +70,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //getting the recipes that have been saved by a user
@@ -95,7 +94,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //delete recipes that have been saved
@@ -130,7 +129,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //liking recipes
@@ -202,7 +201,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  },
+  }
 );
 
 //getting the recipes that have been liked
@@ -231,7 +230,7 @@ router.get(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //unlike recipes
@@ -266,7 +265,7 @@ router.delete(
       console.error(err);
       res.status(500).json({ error: "internal error" });
     }
-  },
+  }
 );
 
 //getting personalized recipes
@@ -292,7 +291,7 @@ router.get(
 
       //get ingredients from the liked recipes
       const allIngredients = userwithLike.liked.flatMap(
-        (r) => r.ingredients || [],
+        (r) => r.ingredients || []
       );
 
       if (allIngredients.length === 0) {
@@ -302,7 +301,7 @@ router.get(
 
       //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) =>
-        ing.trim().toLowerCase().split(/\s+/),
+        ing.trim().toLowerCase().split(/\s+/)
       );
 
       const frequency: Record<string, number> = {};
@@ -317,7 +316,7 @@ router.get(
         .join(",");
 
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`,
+        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`
       );
       if (!response.ok) throw new Error("failed to get personalized recipes");
       const data = await response.json();
@@ -326,7 +325,7 @@ router.get(
       console.error(error);
       res.status(500).json({ error: "server error" });
     }
-  },
+  }
 );
 
 //get other user's saved recipes using username
@@ -350,4 +349,140 @@ router.get("/recipes/user/:username", async (req: Request, res: Response) => {
   }
 });
 
+//gets users patterns (see how they interact with all the recipes) not just the ones that overlap
+//how much recipes a user has interacted with does not effect the score as it uses magnitude
+function cosineSimilarity(
+  a: Map<string, number>,
+  b: Map<string, number>
+): number {
+  const allRecipeIds = new Set([...a.keys(), ...b.keys()]);
+  let dot = 0; //
+  let magnitudeA = 0;
+  let magnitudeB = 0;
+
+  for (const id of allRecipeIds) {
+    const valA = a.get(id) || 0;
+    const valB = b.get(id) || 0;
+    dot += valA * valB; //calculate how much users interact with the same recipe
+    //overall interaction for that user 
+    magnitudeA += valA ** 2; 
+    magnitudeB += valB ** 2; 
+  }
+  if (magnitudeA === 0 || magnitudeB === 0) return 0;
+  return dot / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB)); //final similarity score (closer to 1 more similar they are)
+}
+
+router.get("/recipes/recommended", requireAuth, async (req, res) => {
+  const username = req.session.user?.username;
+  if (!username) {
+    res.status(401).json({ error: "user not found" });
+    return;
+  }
+  try {
+    const currUser = await prisma.user.findUnique({
+      where: { username },
+      include: { saved: true, liked: true },
+    });
+
+    if (!currUser) {
+      res.status(404).json({ error: "user not found" });
+      return;
+    }
+
+    //current user's interactions
+    const userSaved = new Map<string, number>();
+    const seenRecipes = new Set<string>();
+
+    //assigning weights for the recipes - 3 if liked and saved, 1 if saved only
+    for (const recipe of currUser.saved) {
+      const liked = currUser.liked.some((r) => r.id === recipe.id);
+      const score = liked ? 3 : 1;
+      userSaved.set(recipe.id, score);
+      seenRecipes.add(recipe.id);
+    }
+
+    //assigning weights for the recipes - 2 if liked only
+    for (const liked of currUser.liked) {
+      if (!userSaved.has(liked.id)) {
+        userSaved.set(liked.id, 2);
+        seenRecipes.add(liked.id);
+      }
+    }
+
+    //other user's interactions
+    const otherUsers = await prisma.user.findMany({
+      where: { id: { not: currUser.id } },
+      include: { saved: true, liked: true },
+    });
+
+    const scores: Map<
+      string,
+      { recipe: any; totalWeighted: number; totalSimilarity: number }
+    > = new Map();
+
+    for (const user of otherUsers) {
+      const otherSaved = new Map<string, number>();
+      const otherRecipe = new Map<string, any>();
+
+      //assigning weights for the recipes - 3 if liked and saved, 1 if saved only
+      for (const recipe of user.saved) {
+        const liked = user.liked.some((r) => r.id === recipe.id);
+        const score = liked ? 3 : 1;
+        otherSaved.set(recipe.id, score);
+        otherRecipe.set(recipe.id, recipe);
+      }
+
+      //assigning weights for the recipes - 2 if liked only
+      for (const liked of user.liked) {
+        if (!otherRecipe.has(liked.id)) {
+          otherSaved.set(liked.id, 2);
+          otherRecipe.set(liked.id, liked);
+        }
+      }
+
+      const sim = cosineSimilarity(userSaved, otherSaved); //gets similarity score for current user and other user
+      if (sim === 0) continue; //skip users who have 0 similarity score
+
+      for (const [recipeId, score] of otherSaved.entries()) {
+        if (seenRecipes.has(recipeId)) continue; //skip receipes that the current user has interacted with
+
+        const existing = scores.get(recipeId);
+        //calculating that specific user's contribution to the recipe score 
+        //user similarity * their weight (1,2,3) for that recipe
+        const totalScore = sim * score; 
+
+        if (existing) {
+          //total of all the score and other user similarities
+          existing.totalWeighted += totalScore;
+          existing.totalSimilarity += sim;
+        } else {
+          scores.set(recipeId, {
+            recipe: otherRecipe.get(recipeId),
+            totalWeighted: totalScore,
+            totalSimilarity: sim,
+          });
+        }
+      }
+    }
+    const topRecipes = [...scores.values()]
+      .map(({ recipe, totalWeighted, totalSimilarity }) => {
+        //average weight for that recipe
+        const normalized = totalSimilarity === 0 ? 0 : totalWeighted / totalSimilarity;
+        //make the score consistent by dividing it by the maximum weight (3)
+        //as the totalWeighted can be over 1 beacuse there are multiple user scores added together
+        const percentage = Math.min((normalized / 3) * 100, 100);
+        return {
+          ...recipe,
+          score: parseFloat(percentage.toFixed(2)),
+        };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    res.json(topRecipes);
+    return;
+  } catch (err) {
+    console.error("recommendation error: ", err);
+    res.status(500).json({ error: "internal server error" });
+  }
+});
 export default router;

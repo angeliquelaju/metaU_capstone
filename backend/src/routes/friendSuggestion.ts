@@ -5,7 +5,7 @@ import requireAuth from "../middleware/requireAuth";
 const router = Router();
 
 //calculates recipe similarity using weighted jaccard similarity
-//weight: 1 (if saved), 2 (if saved and liked)
+//weight: 1 (if saved), 2 (if liked), 3 (if saved and liked)
 function recipeSimilar(
   mapA: Map<string, number>,
   mapB: Map<string, number>
@@ -62,7 +62,7 @@ router.get("/friends/suggestions", requireAuth, async (req, res) => {
 
     for (const recipe of currUser.saved) {
       const liked = currUser.liked.some((r) => r.id === recipe.id);
-      userSaved.set(recipe.id, liked ? 2 : 1); //assign weights to recipe
+      userSaved.set(recipe.id, liked ? 3 : 1); //assign weights to recipe
       recipe.ingredients?.forEach((ing) =>
         userIngredients.add(ingredientsGrouping(ing))
       );
@@ -78,16 +78,16 @@ router.get("/friends/suggestions", requireAuth, async (req, res) => {
         const otherIngredients = new Set<string>();
         for (const recipe of user.saved) {
           const liked = user.liked.some((r) => r.id === recipe.id);
-          othersSaved.set(recipe.id, liked ? 2 : 1);
+          othersSaved.set(recipe.id, liked ? 3 : 1);
           recipe.ingredients?.forEach((ing) =>
             otherIngredients.add(ingredientsGrouping(ing))
           );
         }
-        
+
         for (const liked of user.liked) {
           if (!othersSaved.has(liked.id)) {
             othersSaved.set(liked.id, 2);
-            liked.ingredients?.forEach((ing: string) => 
+            liked.ingredients?.forEach((ing: string) =>
               otherIngredients.add(ingredientsGrouping(ing))
             );
           }
@@ -100,7 +100,7 @@ router.get("/friends/suggestions", requireAuth, async (req, res) => {
           otherIngredients
         );
         const finalScore = 0.7 * recipeScore + 0.3 * ingredientScore;
-        
+
         return {
           id: user.id,
           username: user.username,

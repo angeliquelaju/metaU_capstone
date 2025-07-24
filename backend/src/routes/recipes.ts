@@ -301,6 +301,7 @@ router.get(
 
       //group ingredient words (ex. chicken breast -> chicken)
       const tokens = allIngredients.flatMap((ing) =>
+        //.trim().split(/\s+/) takes out all whitespaces and splits it no matter what whitespace there is
         ing.trim().toLowerCase().split(/\s+/)
       );
 
@@ -466,11 +467,9 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
     }
     const topRecipes = [...scores.values()]
       .map(({ recipe, totalWeighted, totalSimilarity }) => {
-        //average weight for that recipe
-        const normalized = totalSimilarity === 0 ? 0 : totalWeighted / totalSimilarity;
-        //make the score consistent by dividing it by the maximum weight (3)
-        //as the totalWeighted can be over 1 beacuse there are multiple user scores added together
-        const percentage = Math.min((normalized / 3) * 100, 100);
+        //make the score consistent by dividing it by the maximum weight (3). total weight can be over 1
+        //cause there are multiple user scores added together. max the score at 100 even if totalWeighted is over 100
+        const percentage = Math.min((totalWeighted / 3) * 100, 100);
         return {
           ...recipe,
           score: parseFloat(percentage.toFixed(2)),

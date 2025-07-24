@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
-const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
 
 const DAYS = [
   "monday",

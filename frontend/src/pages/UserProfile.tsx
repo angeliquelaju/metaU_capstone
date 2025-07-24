@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const UserProfile = () => {
@@ -45,7 +46,7 @@ const UserProfile = () => {
       </button>
       <h2>{username}'s saved recipes</h2>
       {loading ? (
-        <p>loading...</p>
+        <LoadingSpinner />
       ) : error ? (
         <p>error: {error}</p>
       ) : (

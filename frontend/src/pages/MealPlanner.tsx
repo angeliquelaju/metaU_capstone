@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const DAYS = [
@@ -80,8 +81,13 @@ export default function MealPlanner() {
           setPlan(null);
         }
         setLoading(false);
-      } catch (error) {
+      } catch (error: any) {
         console.error("error loading saved recipes or plan: ", error);
+        if (
+          error.response?.status === 401 || error.message?.includes("please log in")
+        ) {
+          setMessage("please log in to use the meal planner");
+        }
         setPlan(null);
         setLoading(false);
       }
@@ -208,7 +214,8 @@ export default function MealPlanner() {
     setRecipePreferences(populatePreferences);
   };
 
-  if (loading) return <p>loading saved recipes...</p>;
+  if (loading) return <LoadingSpinner />;
+  if (message === "please log in to use the meal planner") return <p>{message}</p>
 
   return (
     <div>

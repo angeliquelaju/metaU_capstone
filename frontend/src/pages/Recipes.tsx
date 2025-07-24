@@ -4,6 +4,7 @@ import RecipeCard from "../components/RecipeCard";
 import FilterModal from "../components/FilterModal";
 const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Recipes = () => {
   const { selected } = useIngredients(); //selected ingredients from the kichen page
@@ -90,7 +91,7 @@ const Recipes = () => {
   if (!loading && selected.length === 0) {
     return <p>please go to the Kitchen page and select ingredients</p>;
   }
-  if (loading) return <p>loading recipes</p>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
 
   return (

@@ -1,23 +1,43 @@
 import { useEffect, useState } from "react";
 import type { GroceryItem } from "../types";
+import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function GroceryList() {
   const [list, setList] = useState<GroceryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch(`${backendURL}/grocery`, {
+      try {
+        const res = await fetch(`${backendURL}/grocery`, {
         credentials: "include",
       });
       const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 401 && data.message === "please log in") {
+          setList([]);
+          setError("please log in");
+        } else {
+          throw new Error(data.error || "failed to fetch grocery list");
+        }
+        return;
+      }
       setList(data);
+    } catch (err) {
+      console.error("error loading grocery list: ", err);
+      setError("something went wrong");
+    } finally {
       setLoading(false);
+    }
     };
     load();
   }, []);
-  if (loading) return <p>loading ...</p>;
+
+  if (loading) return <LoadingSpinner />;
+  if (error === "please log in") return <p>please log in</p>
+  if (error) return <p>error: {error}</p>;
 
   return (
     <div>

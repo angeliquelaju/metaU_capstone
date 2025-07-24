@@ -456,3 +456,27 @@ input {
 .saveGoals-button {
   margin-left: 10px;
 }
+
+/*loading spinner*/
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 32px auto;
+  color: #555;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 5px solid #ddd;
+  border-top: 5px solid #5f8b88;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

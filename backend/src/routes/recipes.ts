@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import requireAuth from "../middleware/requireAuth";
 import prisma from "../prisma";
+import {recipeMap} from "../utils/recipeMap";
 
 import "express-session";
 declare module "express-session" {
@@ -391,23 +392,11 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
     }
 
     //current user's interactions
-    const userSaved = new Map<string, number>();
+    const userSaved = recipeMap(currUser.saved, currUser.liked);
     const seenRecipes = new Set<string>();
 
-    //assigning weights for the recipes - 3 if liked and saved, 1 if saved only
-    for (const recipe of currUser.saved) {
-      const liked = currUser.liked.some((r) => r.id === recipe.id);
-      const score = liked ? 3 : 1;
-      userSaved.set(recipe.id, score);
-      seenRecipes.add(recipe.id);
-    }
-
-    //assigning weights for the recipes - 2 if liked only
-    for (const liked of currUser.liked) {
-      if (!userSaved.has(liked.id)) {
-        userSaved.set(liked.id, 2);
-        seenRecipes.add(liked.id);
-      }
+    for (const recipeId of userSaved.keys()) {
+      seenRecipes.add(recipeId);
     }
 
     //other user's interactions
@@ -418,25 +407,23 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
 
     const scores: Map<
       string,
-      { recipe: any; totalWeighted: number; totalSimilarity: number }
+      { recipe: any; totalWeighted: number }
     > = new Map();
 
     for (const user of otherUsers) {
-      const otherSaved = new Map<string, number>();
+      //map of weights
+      const otherSaved = recipeMap(user.saved, user.liked);
+      //map of recipeIds and its information (title, ingredients, etc)
       const otherRecipe = new Map<string, any>();
 
-      //assigning weights for the recipes - 3 if liked and saved, 1 if saved only
+      //adding all saved recipes to recipe map
       for (const recipe of user.saved) {
-        const liked = user.liked.some((r) => r.id === recipe.id);
-        const score = liked ? 3 : 1;
-        otherSaved.set(recipe.id, score);
         otherRecipe.set(recipe.id, recipe);
       }
 
-      //assigning weights for the recipes - 2 if liked only
+      //adding liked-only recipes that were not saved 
       for (const liked of user.liked) {
         if (!otherRecipe.has(liked.id)) {
-          otherSaved.set(liked.id, 2);
           otherRecipe.set(liked.id, liked);
         }
       }
@@ -455,18 +442,16 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
         if (existing) {
           //total of all the score and other user similarities
           existing.totalWeighted += totalScore;
-          existing.totalSimilarity += sim;
         } else {
           scores.set(recipeId, {
             recipe: otherRecipe.get(recipeId),
             totalWeighted: totalScore,
-            totalSimilarity: sim,
           });
         }
       }
     }
     const topRecipes = [...scores.values()]
-      .map(({ recipe, totalWeighted, totalSimilarity }) => {
+      .map(({ recipe, totalWeighted }) => {
         //make the score consistent by dividing it by the maximum weight (3). total weight can be over 1
         //cause there are multiple user scores added together. max the score at 100 even if totalWeighted is over 100
         const percentage = Math.min((totalWeighted / 3) * 100, 100);

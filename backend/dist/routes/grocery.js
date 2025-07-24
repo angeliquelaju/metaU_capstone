@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../prisma"));
 const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
+const ingredientCache_1 = require("../utils/ingredientCache");
 const router = (0, express_1.Router)();
 const SPOON_KEY = process.env.SPOON_KEY;
 router.get("/grocery", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,8 +43,7 @@ router.get("/grocery", requireAuth_1.default, (req, res) => __awaiter(void 0, vo
             for (const meal of day.meals) {
                 const id = meal.spoonacularId;
                 const userServings = (_c = meal.servings) !== null && _c !== void 0 ? _c : 1;
-                const response = yield fetch(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${process.env.SPOON_KEY}`);
-                const data = yield response.json();
+                const data = yield (0, ingredientCache_1.ingredientInfo)(id);
                 const recipeServings = data.servings || 1;
                 const multiplier = userServings / recipeServings;
                 //looping through all the ingredients in the recipe

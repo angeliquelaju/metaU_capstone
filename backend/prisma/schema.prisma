@@ -50,3 +50,9 @@ model NutritionCache {
   carbs Float
   updatedAt DateTime @updatedAt
 }
+
+model IngredientCache {
+  spoonacularId Int @id
+  ingredients Json
+  updatedAt DateTime @updatedAt
+}

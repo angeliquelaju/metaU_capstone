@@ -32,10 +32,6 @@ export default function MealPlanner() {
 
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [adjusted, setAdjusted] = useState(false);
-  //cache nutrition data for recipes
-  const [nutritionCache, setNutritionCache] = useState<
-    Map<Number, { calories: number; protein: number; carbs: number }>
-  >(new Map());
   const [goals, setGoals] = useState({
     calories: 2000,
     protein: 200,
@@ -121,22 +117,12 @@ export default function MealPlanner() {
     //fetch nutrition info, but use cache first if its possible
     await Promise.all(
       updatedPreference.map(async (r) => {
-        const cached = nutritionCache.get(r.spoonacularId);
-        if (cached) {
-          nutritionMap.set(r.spoonacularId, cached);
-          return;
-        }
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/${r.spoonacularId}/nutritionWidget.json?apiKey=${SPOON_KEY}`
-        );
+          `${backendURL}/nutrition/${r.spoonacularId}`, {
+            credentials: "include"
+          });
         const data = await res.json();
-        const parsed = {
-          calories: parseInt(data.calories),
-          protein: parseFloat(data.protein.replace("g", "")),
-          carbs: parseFloat(data.carbs.replace("g", "")),
-        };
-        nutritionMap.set(r.spoonacularId, parsed);
-        setNutritionCache((prev) => new Map(prev).set(r.spoonacularId, parsed));
+        nutritionMap.set(r.spoonacularId, data);
       })
     );
 

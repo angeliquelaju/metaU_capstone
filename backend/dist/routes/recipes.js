@@ -16,6 +16,7 @@ const express_1 = require("express");
 const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
 const prisma_1 = __importDefault(require("../prisma"));
 const recipeMap_1 = require("../utils/recipeMap");
+const similarity_1 = require("../utils/similarity");
 require("express-session");
 const SPOON_KEY = process.env.SPOON_KEY;
 //saving recipes
@@ -352,17 +353,15 @@ router.get("/recipes/recommended", requireAuth_1.default, (req, res) => __awaite
         }
         //current user's interactions
         const userSaved = (0, recipeMap_1.recipeMap)(currUser.saved, currUser.liked);
-        const seenRecipes = new Set();
-        for (const recipeId of userSaved.keys()) {
-            seenRecipes.add(recipeId);
-        }
+        const seenRecipes = new Set(userSaved.keys());
         //other user's interactions
         const otherUsers = yield prisma_1.default.user.findMany({
             where: { id: { not: currUser.id } },
             include: { saved: true, liked: true },
         });
+        const topUsers = (0, similarity_1.top5Users)(currUser, otherUsers);
         const scores = new Map();
-        for (const user of otherUsers) {
+        for (const { user } of topUsers) {
             //map of weights
             const otherSaved = (0, recipeMap_1.recipeMap)(user.saved, user.liked);
             //map of recipeIds and its information (title, ingredients, etc)
@@ -403,7 +402,7 @@ router.get("/recipes/recommended", requireAuth_1.default, (req, res) => __awaite
         }
         const topRecipes = [...scores.values()]
             .map(({ recipe, totalWeighted, numUsers }) => {
-            //make the score consistent by dividing it by the maximum weight (3). total weight can be over 1
+            //make the score consistent by dividing it by the maximum weight (3) * number of users interacted. total weight can be over 1
             //cause there are multiple user scores added together. max the score at 100 even if totalWeighted is over 100
             const denominator = 3 * numUsers.size;
             const percentage = denominator > 0 ? (totalWeighted / denominator) * 100 : 0;

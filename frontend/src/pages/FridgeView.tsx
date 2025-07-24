@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useIngredients } from "../context/IngredientContext.tsx";
 
 const fridgeItems = [
-  { name: "chicken", src: "/src/assets/chicken.png", className: "chicken" },
-  { name: "tomato", src: "/src/assets/tomato.png", className: "tomato" },
-  { name: "onion", src: "/src/assets/onion.png", className: "onion" },
-  { name: "lemon", src: "/src/assets/lemon.png", className: "lemon" },
+  { name: "chicken", src: "/chicken.png", className: "chicken" },
+  { name: "tomato", src: "/tomato.png", className: "tomato" },
+  { name: "onion", src: "/onion.png", className: "onion" },
+  { name: "lemon", src: "/lemon.png", className: "lemon" },
 ];
 
 const FridgeView = () => {
@@ -25,7 +25,7 @@ const FridgeView = () => {
         <button className="back-button" onClick={() => navigate("/kitchen")}>
           ← Back
         </button>
-        <img src="/src/assets/fridge.png" alt="fridge" className="full-image" />
+        <img src="/fridge.png" alt="fridge" className="full-image" />
         {fridgeItems.map((item, index) => (
           <button
             key={index}
@@ -43,7 +43,7 @@ const FridgeView = () => {
           {selected.map((item) => (
             <img
               key={item}
-              src={`/src/assets/${item}.png`}
+              src={`/${item}.png`}
               alt={item}
               className="selected-ingredients"
               onClick={() => removeIngredient(item)}

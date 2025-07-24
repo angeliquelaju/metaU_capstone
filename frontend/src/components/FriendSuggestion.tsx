@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface Suggestion {
   id: number;
@@ -17,7 +18,7 @@ const FriendSuggestion: React.FunctionComponent = () => {
   useEffect(() => {
     const fetchSuggestions = async () => {
       try {
-        const res = await fetch("http://localhost:4000/friends/suggestions", {
+        const res = await fetch(`${backendURL}/friends/suggestions`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("failed to fetch suggestions");

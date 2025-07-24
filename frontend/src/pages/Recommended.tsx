@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Reccomended = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Reccomended = () => {
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
-        const res = await fetch("http://localhost:4000/recipes/recommended", {
+        const res = await fetch(`${backendURL}/recipes/recommended`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("failed to fetch recommended recipes");

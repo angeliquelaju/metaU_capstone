@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -10,7 +11,7 @@ function Register() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:4000/register", {
+      const res = await fetch(`${backendURL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

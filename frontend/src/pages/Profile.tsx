@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FriendSuggestion from "../components/FriendSuggestion";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function Profile({
   user,
@@ -26,7 +27,7 @@ function Profile({
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await fetch("http://localhost:4000/logout", {
+    await fetch(`${backendURL}/logout`, {
       credentials: "include",
     });
     setUser(null);
@@ -35,7 +36,7 @@ function Profile({
   useEffect(() => {
     const fetchSaved = async () => {
       try {
-        const res = await fetch("http://localhost:4000/recipes/user", {
+        const res = await fetch(`${backendURL}/recipes/user`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("failed to fetch current user data");

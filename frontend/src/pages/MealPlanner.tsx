@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const DAYS = [
   "monday",
@@ -42,16 +43,16 @@ export default function MealPlanner() {
     const loadData = async () => {
       try {
         const [recipesRes, planRes, goalsRes, historyRes] = await Promise.all([
-          fetch("http://localhost:4000/recipes/user", {
+          fetch(`${backendURL}/recipes/user`, {
             credentials: "include",
           }),
-          fetch("http://localhost:4000/meal-plan", {
+          fetch(`${backendURL}/meal-plan`, {
             credentials: "include",
           }),
-          fetch("http://localhost:4000/user/goals", {
+          fetch(`${backendURL}/user/goals`, {
             credentials: "include",
           }),
-          fetch("http://localhost:4000/meal-plan/history", {
+          fetch(`${backendURL}/meal-plan/history`, {
             credentials: "include",
           }),
         ]);
@@ -138,7 +139,7 @@ export default function MealPlanner() {
       return;
     }
 
-    const res = await fetch("http://localhost:4000/generate-plan", {
+    const res = await fetch(`${backendURL}/generate-plan`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -264,7 +265,7 @@ export default function MealPlanner() {
               <button
                 className="saveGoals-button"
                 onClick={async () => {
-                  await fetch("http://localhost:4000/user/goals", {
+                  await fetch(`${backendURL}/user/goals`, {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },

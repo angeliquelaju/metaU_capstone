@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function Login({ setUser }: { setUser: (name: string) => void }) {
   const [username, setUsername] = useState("");
@@ -10,7 +11,7 @@ function Login({ setUser }: { setUser: (name: string) => void }) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:4000/login", {
+      const res = await fetch(`${backendURL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

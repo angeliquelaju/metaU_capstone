@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
 import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const UserProfile = () => {
   const { username } = useParams();
@@ -23,7 +24,7 @@ const UserProfile = () => {
     const fetchUserRecipes = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/recipes/user/${username}`,
+          `${backendURL}/recipes/user/${username}`,
         );
         if (!res.ok) throw new Error("failed to load user recipes");
         const data = await res.json();

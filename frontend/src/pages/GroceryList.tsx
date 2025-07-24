@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { GroceryItem } from "../types";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function GroceryList() {
   const [list, setList] = useState<GroceryItem[]>([]);
@@ -7,7 +8,7 @@ export default function GroceryList() {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch("http://localhost:4000/grocery", {
+      const res = await fetch(`${backendURL}/grocery`, {
         credentials: "include",
       });
       const data = await res.json();

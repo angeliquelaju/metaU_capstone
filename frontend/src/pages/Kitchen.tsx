@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Kitchen = () => {
@@ -6,7 +5,7 @@ const Kitchen = () => {
   return (
     <div className="page-container">
       <img
-        src="/src/assets/kitchen.png"
+        src="/kitchen.png"
         alt="kitchen"
         className="kitchen-image"
       />

@@ -7,7 +7,7 @@ export async function ingredientInfo(spoonacularId: number) {
     where: {spoonacularId},
   })
 
-  if (cached) return cached;
+  if (cached) return cached.ingredients;
 
   const res = await fetch(
     `https://api.spoonacular.com/recipes/${spoonacularId}/information?apiKey=${SPOON_KEY}`
@@ -26,5 +26,5 @@ export async function ingredientInfo(spoonacularId: number) {
     update: parsed,
     create: parsed,
   });
-  return data;
+  return parsed.ingredients;
 }

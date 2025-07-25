@@ -21,7 +21,7 @@ function ingredientInfo(spoonacularId) {
             where: { spoonacularId },
         });
         if (cached)
-            return cached;
+            return cached.ingredients;
         const res = yield fetch(`https://api.spoonacular.com/recipes/${spoonacularId}/information?apiKey=${SPOON_KEY}`);
         if (!res.ok) {
             throw new Error(`failed to fetch info recipe ${spoonacularId}`);
@@ -36,6 +36,6 @@ function ingredientInfo(spoonacularId) {
             update: parsed,
             create: parsed,
         });
-        return data;
+        return parsed.ingredients;
     });
 }

@@ -11,6 +11,7 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
+      <h2>find me recipes</h2>
       <NavLink to="/" className={getClassName}>
         <FaHome className="icon" />
         Home

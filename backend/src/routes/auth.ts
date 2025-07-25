@@ -4,7 +4,6 @@ import {
   login,
   logout,
   me,
-  getSession,
 } from "../controllers/authController";
 import requireAuth from "../middleware/requireAuth";
 

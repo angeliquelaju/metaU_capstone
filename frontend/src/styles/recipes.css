@@ -74,7 +74,9 @@
 }
 
 .unsave-button,
-.save-button {
+.save-button,
+.like-button,
+.unlike-button {
   background: transparent;
   border: 0px;
   font-size: 20px;

@@ -1,0 +1,57 @@
+/*meal planner*/
+.meal-planner {
+  padding: 20px;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.calendar-day {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  transition: box-shadow 0.2s ease;
+}
+
+.calendar-day:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #333;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.calendar-meal {
+  background-color: #e0f7fa;
+  padding: 6px 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-meal:hover {
+  background-color: #bee8ee;
+}
+
+.empty-day {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.saveGoals-button {
+  margin-left: 10px;
+}

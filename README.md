@@ -4,6 +4,8 @@ Wireframes: https://drive.google.com/file/d/1FyKvU3DOxkgPq8OdsOVWELTh4LR4OAgK/vi
 
 Name: Find Me Recipes (FER)
 
+Deployed Site: https://metau-capstone.onrender.com
+
 Features
 
 - [x] UI

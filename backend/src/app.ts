@@ -28,12 +28,13 @@ app.use(
 app.use(express.json());
 app.set("trust proxy", 1);
 
+const isTest = process.env.NODE_ENV === "test";
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "defaultsecret",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true, httpOnly: true, sameSite: "none", maxAge: 1000 * 60 * 60 },
+    cookie: { secure: !isTest, httpOnly: true, sameSite: "none", maxAge: 1000 * 60 * 60 },
   }),
 );
 

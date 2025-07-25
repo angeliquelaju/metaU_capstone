@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../prisma"));
 const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
+const nutritionCache_1 = require("../utils/nutritionCache");
 const router = (0, express_1.Router)();
 const SPOON_KEY = process.env.SPOON_KEY;
 router.get("/meal-plan", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,25 +47,12 @@ router.get("/meal-plan", requireAuth_1.default, (req, res) => __awaiter(void 0, 
         const uniqueId = [...new Set(allMeals.map((m) => m.spoonacularId))];
         //fetch all unique recipe's nutritional data in parallel by sending out multiple async api request using promise.all
         //so instead of waiting n times, it'd just be 1 time
-        const spoonacularRes = yield Promise.all(uniqueId.map((id) => __awaiter(void 0, void 0, void 0, function* () {
-            const response = yield fetch(`https://api.spoonacular.com/recipes/${id}/nutritionWidget.json?apiKey=${SPOON_KEY}`);
-            if (!response.ok) {
-                console.error(`error fetching spoonacular recipe ${id}: `, yield response.text());
-                return null;
-            }
-            const data = yield response.json();
-            return {
-                id,
-                calories: parseInt(data.calories),
-                protein: parseFloat(data.protein.replace("g", "")),
-                carbs: parseFloat(data.carbs.replace("g", "")),
-            };
-        })));
+        const spoonacularRes = yield Promise.all(uniqueId.map((id) => __awaiter(void 0, void 0, void 0, function* () { return (0, nutritionCache_1.nutritionInfo)(id); })));
         //accessing the recipe's nutrition info by id in a map has O(1) time
         const nutritionMap = new Map();
         for (const item of spoonacularRes) {
             if (item) {
-                nutritionMap.set(item.id, {
+                nutritionMap.set(item.spoonacularId, {
                     calories: item.calories,
                     protein: item.protein,
                     carbs: item.carbs,
@@ -112,5 +100,20 @@ router.get("/meal-plan/history", requireAuth_1.default, (req, res) => __awaiter(
         return;
     }
     res.json(user.mealPlans);
+}));
+router.get("/nutrition/:id", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        res.status(400).json({ error: "invalid id" });
+        return;
+    }
+    try {
+        const nutrition = yield (0, nutritionCache_1.nutritionInfo)(id);
+        res.json(nutrition);
+    }
+    catch (err) {
+        console.error("nutrition fetch failed: ", err);
+        res.status(500).json({ error: "cannot fetch nutrition" });
+    }
 }));
 exports.default = router;

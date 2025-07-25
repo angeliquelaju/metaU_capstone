@@ -15,28 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../prisma"));
 const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
-const recipeMap_1 = require("../utils/recipeMap");
+const similarity_1 = require("../utils/similarity");
 const router = (0, express_1.Router)();
-//calculates recipe similarity using weighted jaccard similarity
-//weight: 1 (if saved), 2 (if liked), 3 (if saved and liked)
-function recipeSimilar(mapA, mapB) {
-    const allRecipeIds = new Set([...mapA.keys(), ...mapB.keys()]);
-    let intersection = 0;
-    let union = 0;
-    for (const id of allRecipeIds) {
-        const a = mapA.get(id) || 0;
-        const b = mapB.get(id) || 0;
-        intersection += Math.min(a, b); // both users saved recipes
-        union += Math.max(a, b); //unique recipes
-    }
-    return union === 0 ? 0 : intersection / union;
-}
-//ingredient overlap similarity using jaccard
-function ingredientOverlap(ingredientsA, ingredientsB) {
-    const intersection = new Set([...ingredientsA].filter((ing) => ingredientsB.has(ing)));
-    const union = new Set([...ingredientsA, ...ingredientsB]);
-    return union.size === 0 ? 0 : intersection.size / union.size;
-}
 router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const username = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.username;
@@ -53,31 +33,18 @@ router.get("/friends/suggestions", requireAuth_1.default, (req, res) => __awaite
             res.status(404).json({ error: "user not found" });
             return;
         }
-        const userIngredients = new Set();
-        const userMap = (0, recipeMap_1.recipeMap)(currUser.saved, currUser.liked, userIngredients);
         const otherUsers = yield prisma_1.default.user.findMany({
             where: { id: { not: currUser.id } },
             include: { saved: true, liked: true },
         });
-        const suggestions = otherUsers
-            .map((user) => {
-            const otherIngredients = new Set();
-            const otherMap = (0, recipeMap_1.recipeMap)(user.saved, user.liked, otherIngredients);
-            //calculating similarity score for both recipe and ingredient based
-            const recipeScore = recipeSimilar(userMap, otherMap);
-            const ingredientScore = ingredientOverlap(userIngredients, otherIngredients);
-            const finalScore = 0.7 * recipeScore + 0.3 * ingredientScore;
-            return {
-                id: user.id,
-                username: user.username,
-                similarity: parseFloat(finalScore.toFixed(2)),
-                recipeScore: parseFloat(recipeScore.toFixed(2)),
-                ingredientScore: parseFloat(ingredientScore.toFixed(2)),
-            };
-        })
-            .filter((s) => s.similarity > 0.1) //filter out users who have little similarity
-            .sort((a, b) => b.similarity - a.similarity) //sort from highest similarity
-            .slice(0, 5); //top 5 users with the highest similarity
+        const topUsers = (0, similarity_1.top5Users)(currUser, otherUsers);
+        const suggestions = topUsers.map(({ user, finalScore, recipeScore, ingredientScore }) => ({
+            id: user.id,
+            username: user.username,
+            similarity: parseFloat(finalScore.toFixed(2)),
+            recipeScore: parseFloat(recipeScore.toFixed(2)),
+            ingredientScore: parseFloat(ingredientScore.toFixed(2)),
+        }));
         res.json(suggestions);
     }
     catch (err) {

@@ -1,7 +1,8 @@
 import { Router, Request, Response } from "express";
 import requireAuth from "../middleware/requireAuth";
 import prisma from "../prisma";
-import {recipeMap} from "../utils/recipeMap";
+import { recipeMap } from "../utils/recipeMap";
+import { top5Users } from "../utils/similarity";
 
 import "express-session";
 declare module "express-session" {
@@ -358,7 +359,7 @@ function cosineSimilarity(
   b: Map<string, number>
 ): number {
   const allRecipeIds = new Set([...a.keys(), ...b.keys()]);
-  let dot = 0; //
+  let dot = 0;
   let magnitudeA = 0;
   let magnitudeB = 0;
 
@@ -366,9 +367,9 @@ function cosineSimilarity(
     const valA = a.get(id) || 0;
     const valB = b.get(id) || 0;
     dot += valA * valB; //calculate how much users interact with the same recipe
-    //overall interaction for that user 
-    magnitudeA += valA ** 2; 
-    magnitudeB += valB ** 2; 
+    //overall interaction for that user
+    magnitudeA += valA ** 2;
+    magnitudeB += valB ** 2;
   }
   if (magnitudeA === 0 || magnitudeB === 0) return 0;
   return dot / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB)); //final similarity score (closer to 1 more similar they are)
@@ -393,11 +394,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
 
     //current user's interactions
     const userSaved = recipeMap(currUser.saved, currUser.liked);
-    const seenRecipes = new Set<string>();
-
-    for (const recipeId of userSaved.keys()) {
-      seenRecipes.add(recipeId);
-    }
+    const seenRecipes = new Set(userSaved.keys());
 
     //other user's interactions
     const otherUsers = await prisma.user.findMany({
@@ -405,12 +402,14 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
       include: { saved: true, liked: true },
     });
 
+    const topUsers = top5Users(currUser, otherUsers);
+
     const scores: Map<
       string,
-      { recipe: any; totalWeighted: number }
+      { recipe: any; totalWeighted: number; numUsers: Set<string> }
     > = new Map();
 
-    for (const user of otherUsers) {
+    for (const { user } of topUsers) {
       //map of weights
       const otherSaved = recipeMap(user.saved, user.liked);
       //map of recipeIds and its information (title, ingredients, etc)
@@ -421,7 +420,7 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
         otherRecipe.set(recipe.id, recipe);
       }
 
-      //adding liked-only recipes that were not saved 
+      //adding liked-only recipes that were not saved
       for (const liked of user.liked) {
         if (!otherRecipe.has(liked.id)) {
           otherRecipe.set(liked.id, liked);
@@ -435,26 +434,30 @@ router.get("/recipes/recommended", requireAuth, async (req, res) => {
         if (seenRecipes.has(recipeId)) continue; //skip receipes that the current user has interacted with
 
         const existing = scores.get(recipeId);
-        //calculating that specific user's contribution to the recipe score 
+        //calculating that specific user's contribution to the recipe score
         //user similarity * their weight (1,2,3) for that recipe
-        const totalScore = sim * score; 
+        const totalScore = sim * score;
 
         if (existing) {
           //total of all the score and other user similarities
           existing.totalWeighted += totalScore;
+          existing.numUsers.add(user.id.toString());
         } else {
           scores.set(recipeId, {
             recipe: otherRecipe.get(recipeId),
             totalWeighted: totalScore,
+            numUsers: new Set([user.id.toString()]),
           });
         }
       }
     }
     const topRecipes = [...scores.values()]
-      .map(({ recipe, totalWeighted }) => {
-        //make the score consistent by dividing it by the maximum weight (3). total weight can be over 1
+      .map(({ recipe, totalWeighted, numUsers }) => {
+        //make the score consistent by dividing it by the maximum weight (3) * number of users interacted. total weight can be over 1
         //cause there are multiple user scores added together. max the score at 100 even if totalWeighted is over 100
-        const percentage = Math.min((totalWeighted / 3) * 100, 100);
+        const denominator = 3 * numUsers.size;
+        const percentage =
+          denominator > 0 ? (totalWeighted / denominator) * 100 : 0;
         return {
           ...recipe,
           score: parseFloat(percentage.toFixed(2)),

@@ -42,3 +42,17 @@ model MealPlan {
   plan Json
   createdAt DateTime @default(now())
 }
+
+model NutritionCache {
+  spoonacularId Int @id
+  calories Int
+  protein Float
+  carbs Float
+  updatedAt DateTime @updatedAt
+}
+
+model IngredientCache {
+  spoonacularId Int @id
+  ingredients Json
+  updatedAt DateTime @updatedAt
+}

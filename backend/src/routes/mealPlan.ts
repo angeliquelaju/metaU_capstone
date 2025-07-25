@@ -1,6 +1,7 @@
 import { Router } from "express";
 import prisma from "../prisma";
 import requireAuth from "../middleware/requireAuth";
+import {nutritionInfo} from "../utils/nutritionCache"
 
 const router = Router();
 const SPOON_KEY = process.env.SPOON_KEY!;
@@ -45,25 +46,7 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
     //fetch all unique recipe's nutritional data in parallel by sending out multiple async api request using promise.all
     //so instead of waiting n times, it'd just be 1 time
     const spoonacularRes = await Promise.all(
-      uniqueId.map(async (id) => {
-        const response = await fetch(
-          `https://api.spoonacular.com/recipes/${id}/nutritionWidget.json?apiKey=${SPOON_KEY}`,
-        );
-        if (!response.ok) {
-          console.error(
-            `error fetching spoonacular recipe ${id}: `,
-            await response.text(),
-          );
-          return null;
-        }
-        const data = await response.json();
-        return {
-          id,
-          calories: parseInt(data.calories),
-          protein: parseFloat(data.protein.replace("g", "")),
-          carbs: parseFloat(data.carbs.replace("g", "")),
-        };
-      }),
+      uniqueId.map(async (id) => nutritionInfo(id))
     );
 
     //accessing the recipe's nutrition info by id in a map has O(1) time
@@ -73,7 +56,7 @@ router.get("/meal-plan", requireAuth, async (req, res) => {
     >();
     for (const item of spoonacularRes) {
       if (item) {
-        nutritionMap.set(item.id, {
+        nutritionMap.set(item.spoonacularId, {
           calories: item.calories,
           protein: item.protein,
           carbs: item.carbs,
@@ -125,4 +108,20 @@ router.get("/meal-plan/history", requireAuth, async (req, res) => {
 
   res.json(user.mealPlans);
 });
+
+router.get("/nutrition/:id", requireAuth, async(req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.status(400).json({error: "invalid id"});
+    return;
+  }
+  try {
+    const nutrition = await nutritionInfo(id);
+    res.json(nutrition);
+  } catch (err) {
+    console.error("nutrition fetch failed: ", err);
+    res.status(500).json({error: "cannot fetch nutrition"});
+  }
+});
+
 export default router;

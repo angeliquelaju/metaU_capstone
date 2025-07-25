@@ -1,6 +1,7 @@
 import { Router } from "express";
 import prisma from "../prisma";
 import requireAuth from "../middleware/requireAuth";
+import { ingredientInfo } from "../utils/ingredientCache";
 
 const router = Router();
 const SPOON_KEY = process.env.SPOON_KEY!;
@@ -40,10 +41,7 @@ router.get("/grocery", requireAuth, async (req, res) => {
       for (const meal of day.meals) {
         const id = meal.spoonacularId;
         const userServings = meal.servings ?? 1;
-        const response = await fetch(
-          `https://api.spoonacular.com/recipes/${id}/information?apiKey=${process.env.SPOON_KEY}`,
-        );
-        const data = await response.json();
+        const data = await ingredientInfo(id);
 
         const recipeServings = data.servings || 1;
         const multiplier = userServings / recipeServings;

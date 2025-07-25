@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ingredientInfo = ingredientInfo;
 const prisma_1 = __importDefault(require("../prisma"));
-const SPOON_KEY = process.env.SPOON_KEY;
+const spoonacular_1 = require("./spoonacular");
 function ingredientInfo(spoonacularId) {
     return __awaiter(this, void 0, void 0, function* () {
         const cached = yield prisma_1.default.ingredientCache.findUnique({
@@ -22,11 +22,7 @@ function ingredientInfo(spoonacularId) {
         });
         if (cached)
             return cached.ingredients;
-        const res = yield fetch(`https://api.spoonacular.com/recipes/${spoonacularId}/information?apiKey=${SPOON_KEY}`);
-        if (!res.ok) {
-            throw new Error(`failed to fetch info recipe ${spoonacularId}`);
-        }
-        const data = yield res.json();
+        const data = yield (0, spoonacular_1.recipeInfo)(spoonacularId);
         const parsed = {
             spoonacularId,
             ingredients: data,

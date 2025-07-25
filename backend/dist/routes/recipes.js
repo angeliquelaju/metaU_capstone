@@ -17,7 +17,7 @@ const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
 const prisma_1 = __importDefault(require("../prisma"));
 const recipeMap_1 = require("../utils/recipeMap");
 const similarity_1 = require("../utils/similarity");
-const SPOON_KEY = process.env.SPOON_KEY;
+const spoonacular_1 = require("../utils/spoonacular");
 const router = (0, express_1.Router)();
 //getting personalized recipes based on user's top 5 ingredients of their liked recipes
 //looks through liked recipes, gets all the ingredients from those recipes then groups them together 
@@ -58,10 +58,7 @@ router.get("/recipes/personalized", requireAuth_1.default, (req, res) => __await
             .slice(0, 5)
             .map(([key]) => key)
             .join(",");
-        const response = yield fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`);
-        if (!response.ok)
-            throw new Error("failed to get personalized recipes");
-        const data = yield response.json();
+        const data = yield (0, spoonacular_1.searchRecipes)(topIngredients);
         res.json(data.results);
     }
     catch (error) {

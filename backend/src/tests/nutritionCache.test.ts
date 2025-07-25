@@ -1,6 +1,5 @@
 import * as spoonacular from "../utils/spoonacular";
 import prisma from "../prisma";
-import app from "../app";
 import { nutritionInfo } from "../utils/nutritionCache";
 
 jest.mock("../utils/spoonacular");

@@ -1,4 +1,4 @@
-import { getNutritionDiff, getExcess } from "../../../frontend/src/utils/nutritionCalcs";
+import { getNutritionDiff, getExcess } from "../utils/nutritionCalcs";
 describe('nutritionCalcs', () => {
     const goals = {calories: 1000, protein: 80, carbs: 50};
     const current = {calories: 500, protein: 50, carbs: 20};

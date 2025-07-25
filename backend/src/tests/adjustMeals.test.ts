@@ -1,4 +1,4 @@
-import { getNutritionDiff, getExcess } from "../../../frontend/src/utils/nutritionCalcs";
+import { getNutritionDiff, getExcess } from "../utils/nutritionCalcs";
 
 describe("adjustment logic", () => {
     const goals = {calories: 2000, protein: 150, carbs: 200};

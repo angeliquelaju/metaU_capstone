@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
+const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
 
 const DAYS = [
   "monday",
@@ -22,7 +23,7 @@ export default function MealPlanner() {
   >([]);
 
   const [mealCounts, setMealCounts] = useState<Record<string, number>>(() =>
-    Object.fromEntries(DAYS.map((d) => [d, 3])),
+    Object.fromEntries(DAYS.map((d) => [d, 3]))
   );
 
   const [recipePreferences, setRecipePreferences] = useState<
@@ -30,6 +31,11 @@ export default function MealPlanner() {
   >([]);
 
   const [nutrition, setNutrition] = useState<any | null>(null);
+  const [adjusted, setAdjusted] = useState(false);
+  //cache nutrition data for recipes
+  const [nutritionCache, setNutritionCache] = useState<
+    Map<Number, { calories: number; protein: number; carbs: number }>
+  >(new Map());
   const [goals, setGoals] = useState({
     calories: 2000,
     protein: 200,
@@ -63,6 +69,7 @@ export default function MealPlanner() {
           goalsRes.json(),
           historyRes.json(),
         ]);
+
         setSavedRecipes(recipes);
         setGoals(goalsData);
         setPlanHistory(historyData);
@@ -71,8 +78,9 @@ export default function MealPlanner() {
             title: r.title,
             spoonacularId: parseInt(r.id),
             servings: 1,
-          })),
+          }))
         );
+
         if (planRes.ok) {
           const planData = await planRes.json();
           setPlan(planData.plan);
@@ -84,7 +92,8 @@ export default function MealPlanner() {
       } catch (error: any) {
         console.error("error loading saved recipes or plan: ", error);
         if (
-          error.response?.status === 401 || error.message?.includes("please log in")
+          error.response?.status === 401 ||
+          error.message?.includes("please log in")
         ) {
           setMessage("please log in to use the meal planner");
         }
@@ -98,62 +107,181 @@ export default function MealPlanner() {
   const handleGenerate = async () => {
     const totalMeals = Object.values(mealCounts).reduce(
       (sum, count) => sum + count,
-      0,
+      0
     );
-    let totalRecipes = recipePreferences.reduce(
-      (sum, recipe) => sum + recipe.servings,
-      0,
+
+    const updatedPreference = [...recipePreferences];
+
+    //creating a nutrition map, trying to cache
+    const nutritionMap: Map<
+      number,
+      { calories: number; protein: number; carbs: number }
+    > = new Map();
+
+    //fetch nutrition info, but use cache first if its possible
+    await Promise.all(
+      updatedPreference.map(async (r) => {
+        const cached = nutritionCache.get(r.spoonacularId);
+        if (cached) {
+          nutritionMap.set(r.spoonacularId, cached);
+          return;
+        }
+        const res = await fetch(
+          `https://api.spoonacular.com/recipes/${r.spoonacularId}/nutritionWidget.json?apiKey=${SPOON_KEY}`
+        );
+        const data = await res.json();
+        const parsed = {
+          calories: parseInt(data.calories),
+          protein: parseFloat(data.protein.replace("g", "")),
+          carbs: parseFloat(data.carbs.replace("g", "")),
+        };
+        nutritionMap.set(r.spoonacularId, parsed);
+        setNutritionCache((prev) => new Map(prev).set(r.spoonacularId, parsed));
+      })
     );
+
+    //calculating total nutrition
+    const totalNutrition = { calories: 0, protein: 0, carbs: 0 };
+    let totalRecipes = 0;
+
+    for (const recipe of updatedPreference) {
+      const n = nutritionMap.get(recipe.spoonacularId);
+      if (!n) continue;
+      totalNutrition.calories += n.calories * recipe.servings;
+      totalNutrition.protein += n.protein * recipe.servings;
+      totalNutrition.carbs += n.carbs * recipe.servings;
+      totalRecipes += recipe.servings;
+    }
 
     let autoAdjust = false;
-    const updatedPreference = [...recipePreferences];
-    let counter = 0;
+    const diff = (goal: number, actual: number) => goal - actual;
 
-    //increase servings based on recipe that has the least number of servings
-    while (totalRecipes < totalMeals) {
-      const recipe = updatedPreference.reduce((min, curr) =>
-        curr.servings < min.servings ? curr : min,
-      );
+    //adding servings until recipe and meals are balanced towards meeting the nutrition goals
+    while (
+      totalRecipes < totalMeals ||
+      totalNutrition.calories < goals.calories ||
+      totalNutrition.protein < goals.protein ||
+      totalNutrition.carbs < goals.carbs
+    ) {
+      //get recipes that have nutrition info
+      const recipes = updatedPreference.filter((r) =>
+        nutritionMap.has(r.spoonacularId)
+      ); 
 
-      recipe.servings++;
+      if (recipes.length === 0) break;
+      let best = recipes[0]; //initialize with first recipe
+      let bestNutrition = nutritionMap.get(best.spoonacularId)!;
+      //calculate how much this recipe help lessen the gap between current total and user goal
+      let bestScore =
+        diff(goals.calories, totalNutrition.calories) * bestNutrition.calories +
+        diff(goals.protein, totalNutrition.protein) * bestNutrition.protein +
+        diff(goals.carbs, totalNutrition.carbs) * bestNutrition.carbs;
+
+      //loop through other recipes in the map to find the one with the highest score
+      for (let i = 1; i < recipes.length; i++) {
+        const recipe = recipes[i];
+        const n = nutritionMap.get(recipe.spoonacularId)!;
+        const score =
+          diff(goals.calories, totalNutrition.calories) * n.calories +
+          diff(goals.protein, totalNutrition.protein) * n.protein +
+          diff(goals.carbs, totalNutrition.carbs) * n.carbs;
+
+        if (score > bestScore) {
+          best = recipe;
+          bestNutrition = n;
+          bestScore = score;
+        }
+      }
+
+      //increase serving and macros of best recipe
+      best.servings++;
+      totalNutrition.calories += bestNutrition.calories;
+      totalNutrition.protein += bestNutrition.protein;
+      totalNutrition.carbs += bestNutrition.carbs;
       totalRecipes++;
       autoAdjust = true;
-
-      //prevents infinite loop
-      counter++;
-      if (counter > updatedPreference.length * 10) break;
     }
 
-    //decrease servings based on recipe that has the most number of servings
-    while (totalRecipes > totalMeals) {
-      const recipe = updatedPreference.reduce((max, curr) =>
-        curr.servings > max.servings ? curr : max,
+    //removing servings until serving reached or reduce macro total
+    while (
+      totalRecipes > totalMeals ||
+      totalNutrition.calories > goals.calories * 1.1 ||
+      totalNutrition.protein > goals.protein * 1.1 ||
+      totalNutrition.carbs > goals.carbs * 1.1
+    ) {
+      //only look at recipes that have more than 0 serving and has nutrition info
+      const recipes = updatedPreference.filter(
+        (r) => r.servings > 0 && nutritionMap.has(r.spoonacularId)
       );
 
-      if (recipe.servings > 0) {
-        recipe.servings--;
-        totalRecipes--;
-        autoAdjust = true;
+      if (recipes.length === 0) break;
+      let worst = recipes[0];
+      let worstNutrition = nutritionMap.get(worst.spoonacularId)!;
+      //calculate how much this recipe effect the excess macros
+      let worstExcess =
+        Math.max(0, totalNutrition.calories - goals.calories) *
+          worstNutrition.calories +
+        Math.max(0, totalNutrition.protein - goals.protein) *
+          worstNutrition.protein +
+        Math.max(0, totalNutrition.carbs - goals.carbs) * worstNutrition.carbs;
+
+      //loop through other recipes in the map to find the one with the highest score (worst recipe)
+      for (let i = 1; i < recipes.length; i++) {
+        const recipe = recipes[i];
+        const n = nutritionMap.get(recipe.spoonacularId)!;
+        const excess =
+          Math.max(0, totalNutrition.calories - goals.calories) * n.calories +
+          Math.max(0, totalNutrition.protein - goals.protein) * n.protein +
+          Math.max(0, totalNutrition.carbs - goals.carbs) * n.carbs;
+
+        if (excess > worstExcess) {
+          worst = recipe;
+          worstNutrition = n;
+          worstExcess = excess;
+        }
       }
+
+      //subtract the serving and macros of that recipe
+      worst.servings--;
+      totalNutrition.calories -= worstNutrition.calories;
+      totalNutrition.protein -= worstNutrition.protein;
+      totalNutrition.carbs -= worstNutrition.carbs;
+      totalRecipes--;
+      autoAdjust = true;
     }
 
-    if (autoAdjust) {
-      setMessage(
-        `adjusted recipe servings automatically to match ${totalMeals} meals.`,
+    //if meal count is still less than totalMeals, adds serving to the one with the lowest servings
+    let finalTotal = updatedPreference.reduce((sum, r) => sum + r.servings, 0);
+
+    while (finalTotal < totalMeals) {
+      const recipe = updatedPreference.reduce((min, curr) =>
+        curr.servings < min.servings ? curr : min
       );
+      recipe.servings++;
+      finalTotal++;
+    }
+
+    if (autoAdjust && !adjusted) {
       setRecipePreferences(updatedPreference);
+      setAdjusted(true);
+      setMessage(
+        `adjusted recipe servings automatically to match ${totalMeals} meals and nutrition goals`
+      );
       return;
     }
-
     const res = await fetch(`${backendURL}/generate-plan`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recipePreferences, dailyMeals: mealCounts }),
+      body: JSON.stringify({
+        recipePreferences: updatedPreference,
+        dailyMeals: mealCounts,
+      }),
     });
 
     if (res.ok) {
       setMessage("meal plan generated");
+      setAdjusted(false);
       navigate("/grocery");
     } else {
       setMessage("failed to generate");
@@ -215,7 +343,8 @@ export default function MealPlanner() {
   };
 
   if (loading) return <LoadingSpinner />;
-  if (message === "please log in to use the meal planner") return <p>{message}</p>
+  if (message === "please log in to use the meal planner")
+    return <p>{message}</p>;
 
   return (
     <div>
@@ -244,6 +373,7 @@ export default function MealPlanner() {
                 {nutrition.weekly.carbs >= goals.carbs ? " yes ✅" : " no ❌"}
               </p>
               <h4>set weekly goals:</h4>
+              calories:
               <input
                 type="number"
                 value={goals.calories}
@@ -252,7 +382,7 @@ export default function MealPlanner() {
                 }
                 placeholder="weekly calories"
               />
-              kcal
+              protein:
               <input
                 type="number"
                 value={goals.protein}
@@ -261,14 +391,13 @@ export default function MealPlanner() {
                 }
                 placeholder="weekly protein"
               />
-              g
+              carbs:
               <input
                 type="number"
                 value={goals.carbs}
                 onChange={(e) => setGoals({ ...goals, carbs: +e.target.value })}
                 placeholder="weekly carbs"
               />
-              g
               <button
                 className="saveGoals-button"
                 onClick={async () => {
@@ -322,6 +451,49 @@ export default function MealPlanner() {
         <>
           {planHistory.length > 0 && (
             <>
+              <div className="nutrition-overview">
+                <h4>set weekly goals:</h4>
+                <input
+                  type="number"
+                  value={goals.calories}
+                  onChange={(e) =>
+                    setGoals({ ...goals, calories: +e.target.value })
+                  }
+                  placeholder="weekly calories"
+                />
+                kcal
+                <input
+                  type="number"
+                  value={goals.protein}
+                  onChange={(e) =>
+                    setGoals({ ...goals, protein: +e.target.value })
+                  }
+                  placeholder="weekly protein"
+                />
+                g
+                <input
+                  type="number"
+                  value={goals.carbs}
+                  onChange={(e) =>
+                    setGoals({ ...goals, carbs: +e.target.value })
+                  }
+                  placeholder="weekly carbs"
+                />
+                g
+                <button
+                  className="saveGoals-button"
+                  onClick={async () => {
+                    await fetch(`${backendURL}/user/goals`, {
+                      method: "POST",
+                      credentials: "include",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(goals),
+                    });
+                  }}
+                >
+                  save goals
+                </button>
+              </div>
               <h4>use previous plan</h4>
               <select onChange={handlePlanHistory}>
                 <option value="">pick a previous plan</option>
@@ -340,7 +512,7 @@ export default function MealPlanner() {
                       title: r.title,
                       spoonacularId: parseInt(r.id),
                       servings: 1,
-                    })),
+                    }))
                   );
                 }}
               >

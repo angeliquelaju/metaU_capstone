@@ -5,7 +5,7 @@ import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 import LoadingSpinner from "../components/LoadingSpinner";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-const Reccomended = () => {
+const Recomended = () => {
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,4 +83,4 @@ const Reccomended = () => {
   );
 };
 
-export default Reccomended;
+export default Recomended;

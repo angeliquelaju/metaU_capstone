@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useIngredients } from "../context/IngredientContext";
+import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
+import "../styles/recipes.css";
 import RecipeCard from "../components/RecipeCard";
 import FilterModal from "../components/FilterModal";
-const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
-import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 import LoadingSpinner from "../components/LoadingSpinner";
+const SPOON_KEY = import.meta.env.VITE_SPOON_KEY!;
+
 
 const Recipes = () => {
   const { selected } = useIngredients(); //selected ingredients from the kichen page

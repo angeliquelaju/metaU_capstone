@@ -50,13 +50,7 @@
   display: block;
 }
 
-.chicken,
-.tomato,
-.onion,
-.lemon,
-.garlic,
-.salt,
-.pepper {
+.ingredient {
   position: absolute;
   background: transparent;
   border: 1px;
@@ -64,13 +58,7 @@
   padding: 0;
 }
 
-.chicken:hover img,
-.tomato:hover img,
-.onion:hover img,
-.lemon:hover img,
-.garlic:hover img,
-.salt:hover img,
-.pepper:hover img {
+.ingredient:hover img {
   transform: scale(1.1);
 }
 
@@ -140,9 +128,7 @@
   left: 33%;
 }
 
-.tomato img,
-.lemon img,
-.garlic img {
+.tomato img {
   width: 80px;
   height: auto;
   transition: transform 0.2s;
@@ -164,9 +150,21 @@
   left: 31%;
 }
 
+.lemon img {
+  width: 80px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
 .lemon {
   bottom: 40.5%;
   left: 50%;
+}
+
+.garlic img {
+  width: 80px;
+  height: auto;
+  transition: transform 0.2s;
 }
 
 .garlic {
@@ -174,8 +172,7 @@
   left: 41%;
 }
 
-.salt img,
-.pepper img {
+.salt img {
   width: 50px;
   height: auto;
   transition: transform 0.2s;
@@ -184,6 +181,12 @@
 .salt {
   bottom: 40%;
   left: 33%;
+}
+
+.pepper img {
+  width: 50px;
+  height: auto;
+  transition: transform 0.2s;
 }
 
 .pepper {

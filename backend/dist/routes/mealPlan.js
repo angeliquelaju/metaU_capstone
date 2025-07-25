@@ -17,7 +17,6 @@ const prisma_1 = __importDefault(require("../prisma"));
 const requireAuth_1 = __importDefault(require("../middleware/requireAuth"));
 const nutritionCache_1 = require("../utils/nutritionCache");
 const router = (0, express_1.Router)();
-const SPOON_KEY = process.env.SPOON_KEY;
 router.get("/meal-plan", requireAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     try {

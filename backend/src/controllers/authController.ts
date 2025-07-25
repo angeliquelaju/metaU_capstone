@@ -2,12 +2,6 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import prisma from "../prisma";
 
-declare module "express-session" {
-  interface SessionData {
-    user?: { username: string };
-  }
-}
-
 export const register = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   try {

@@ -1,5 +1,5 @@
 import React from "react";
-// import "./../styles/FilterModal.css";
+import "../styles/filterModal.css";
 
 type Props = {
   filters: {

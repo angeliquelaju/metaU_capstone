@@ -1,7 +1,6 @@
 import { Router } from "express";
 import prisma from "../prisma";
 import requireAuth from "../middleware/requireAuth";
-import { recipeMap } from "../utils/recipeMap";
 import {
   top5Users
 } from "../utils/similarity"

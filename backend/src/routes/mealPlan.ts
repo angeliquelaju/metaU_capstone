@@ -4,7 +4,6 @@ import requireAuth from "../middleware/requireAuth";
 import {nutritionInfo} from "../utils/nutritionCache"
 
 const router = Router();
-const SPOON_KEY = process.env.SPOON_KEY!;
 
 router.get("/meal-plan", requireAuth, async (req, res) => {
   try {

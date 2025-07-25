@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/login.css";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function Register() {

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useIngredients } from "../context/IngredientContext.tsx";
+import "../styles/fridge.css";
 
 const pantryItems = [
   { name: "garlic", src: "/garlic.png", className: "garlic" },

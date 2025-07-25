@@ -3,6 +3,7 @@ import { FaHome, FaUser, FaUtensils, FaClipboardList } from "react-icons/fa";
 import { RiFridgeFill } from "react-icons/ri";
 import { PiNotepadFill } from "react-icons/pi";
 import { IoCalendar } from "react-icons/io5";
+import "../styles/sidebar.css";
 
 const Sidebar = () => {
   const getClassName = ({ isActive }: { isActive: boolean }) =>

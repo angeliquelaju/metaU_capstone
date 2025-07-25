@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "../styles/mealPlanner.css";
 import GoalInput from "./GoalInput";
 
 export default function CalendarView({

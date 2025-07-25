@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { FcLike } from "react-icons/fc";
 import { FaRegHeart } from "react-icons/fa6";
+import "../styles/recipes.css";
 
 type Props = {
   recipe: any;

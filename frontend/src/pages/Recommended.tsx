@@ -46,7 +46,7 @@ const Recomended = () => {
       <button className="back" onClick={() => navigate(-1)}>
         back
       </button>
-      <h3>recommended for you</h3>
+      <h3>recommended for you based on user suggested</h3>
       {loading ? (
         <LoadingSpinner />
       ) : error ? (

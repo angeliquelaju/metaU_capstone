@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nutritionInfo = nutritionInfo;
 const prisma_1 = __importDefault(require("../prisma"));
-const SPOON_KEY = process.env.SPOON_KEY;
+const spoonacular_1 = require("./spoonacular");
 function nutritionInfo(spoonacularId) {
     return __awaiter(this, void 0, void 0, function* () {
         const cached = yield prisma_1.default.nutritionCache.findUnique({
@@ -22,8 +22,7 @@ function nutritionInfo(spoonacularId) {
         });
         if (cached)
             return cached;
-        const res = yield fetch(`https://api.spoonacular.com/recipes/${spoonacularId}/nutritionWidget.json?apiKey=${SPOON_KEY}`);
-        const data = yield res.json();
+        const data = yield (0, spoonacular_1.recipeNutrition)(spoonacularId);
         const nutrition = {
             spoonacularId,
             calories: parseInt(data.calories),

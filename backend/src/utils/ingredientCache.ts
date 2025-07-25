@@ -1,6 +1,5 @@
 import prisma from "../prisma";
-
-const SPOON_KEY = process.env.SPOON_KEY!;
+import { recipeInfo } from "./spoonacular";
 
 export async function ingredientInfo(spoonacularId: number) {
   const cached = await prisma.ingredientCache.findUnique({
@@ -9,14 +8,7 @@ export async function ingredientInfo(spoonacularId: number) {
 
   if (cached) return cached.ingredients;
 
-  const res = await fetch(
-    `https://api.spoonacular.com/recipes/${spoonacularId}/information?apiKey=${SPOON_KEY}`
-  );
-
-  if (!res.ok) {
-    throw new Error(`failed to fetch info recipe ${spoonacularId}`);
-  }
-  const data = await res.json();
+  const data = await recipeInfo(spoonacularId);
   const parsed = {
     spoonacularId,
     ingredients: data,

@@ -1,6 +1,5 @@
 import prisma from "../prisma";
-
-const SPOON_KEY = process.env.SPOON_KEY!;
+import { recipeNutrition } from "./spoonacular";
 
 export async function nutritionInfo(spoonacularId: number) {
   const cached = await prisma.nutritionCache.findUnique({
@@ -9,10 +8,7 @@ export async function nutritionInfo(spoonacularId: number) {
 
   if (cached) return cached;
 
-  const res = await fetch(
-    `https://api.spoonacular.com/recipes/${spoonacularId}/nutritionWidget.json?apiKey=${SPOON_KEY}`
-  );
-  const data = await res.json();
+  const data = await recipeNutrition(spoonacularId);
 
   const nutrition = {
     spoonacularId,

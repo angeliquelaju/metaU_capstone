@@ -3,8 +3,8 @@ import requireAuth from "../middleware/requireAuth";
 import prisma from "../prisma";
 import { recipeMap } from "../utils/recipeMap";
 import { top5Users, cosineSimilarity } from "../utils/similarity";
+import { searchRecipes } from "../utils/spoonacular";
 
-const SPOON_KEY = process.env.SPOON_KEY!;
 const router = Router();
 
 //getting personalized recipes based on user's top 5 ingredients of their liked recipes
@@ -58,11 +58,7 @@ router.get(
         .map(([key]) => key)
         .join(",");
 
-      const response = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOON_KEY}&includeIngredients=${topIngredients}&number=10&addRecipeInformation=true`
-      );
-      if (!response.ok) throw new Error("failed to get personalized recipes");
-      const data = await response.json();
+      const data = await searchRecipes(topIngredients);
       res.json(data.results);
     } catch (error) {
       console.error(error);

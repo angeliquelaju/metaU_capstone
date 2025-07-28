@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/mealPlanner.css";
 import GoalInput from "./GoalInput";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CalendarView({
   plan,
@@ -59,6 +60,12 @@ export default function CalendarView({
           </div>
         ))}
       </div>
+      <button onClick = {() => {
+        const link = document.createElement("a");
+        link.href = `${backendURL}/export/ics`;
+        link.download = "meal-plan.ics";
+        link.click();
+      }}>export to calendar</button>
       <button onClick={() => setShowPlanner(true)}>generate new plan</button>
     </>
   );

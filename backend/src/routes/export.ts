@@ -42,7 +42,7 @@ router.get("/export/ics", requireAuth, async (req, res) => {
 
       const eventDate = new Date(startDate);
       eventDate.setDate(
-        startDate.getDate() + ((dayIndex - startDate.getDay() + 7) % 7)
+        startDate.getDate() + dayIndex
       );
 
       for (const meal of entry.meals) {

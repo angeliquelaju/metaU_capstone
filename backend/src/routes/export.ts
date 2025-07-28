@@ -20,7 +20,12 @@ router.get("/export/ics", requireAuth, async (req, res) => {
       return;
     }
 
-    const startDate = new Date(plan.weekStart);
+    const today = new Date();
+    const day = today.getDay();
+    const daysUntilMon = (8 - day) % 7 || 7;
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() + daysUntilMon);
+    startDate.setHours(0, 0, 0, 0);
     const DAYS = [
       "monday",
       "tuesday",

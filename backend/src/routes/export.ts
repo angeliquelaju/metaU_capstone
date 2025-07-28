@@ -54,7 +54,7 @@ router.get("/export/ics", requireAuth, async (req, res) => {
 
         events.push({
           title: `meal: ${meal.title}`,
-          start: [year, month, day, 12, 0],
+          start: [year, month, day, 19, 0],
           duration: { hours: 1 },
           description: `eat ${meal.servings} serving of ${meal.title}`,
         });

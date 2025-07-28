@@ -90,7 +90,7 @@ const Recipes = () => {
     }
   };
 
-  if (!loading && selected.length === 0) {
+  if (selected.length === 0) {
     return <p>please go to the Kitchen page and select ingredients</p>;
   }
   if (loading) return <LoadingSpinner />;

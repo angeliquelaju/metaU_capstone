@@ -81,3 +81,19 @@
   border: 0px;
   font-size: 20px;
 }
+
+.filters-button {
+  margin-left: 20px;
+  background-color: #fcc999;
+  color: black;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filters-button:hover {
+  background-color: #e2ad7c;
+}

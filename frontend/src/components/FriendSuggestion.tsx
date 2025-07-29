@@ -35,11 +35,11 @@ const FriendSuggestion: React.FunctionComponent = () => {
   }, []);
   if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
-  if (suggestions.length === 0) return <p>no similar users found</p>;
+  if (suggestions.length === 0) return <p>No Similar Users Found</p>;
 
   return (
     <div className="suggestions">
-      <h3>suggested users</h3>
+      <h3>Suggested Users</h3>
       <ul>
         {suggestions.map((s) => (
           <li key={s.id}>
@@ -48,8 +48,8 @@ const FriendSuggestion: React.FunctionComponent = () => {
             </Link>
              - <b>{Math.round(s.similarity * 100)}% match</b>
              <div className="score-details">
-                recipes: <b>{Math.round(s.recipeScore * 100)}% </b>
-                ingredients: <b>{Math.round(s.ingredientScore * 100)}%</b>
+                Recipes Score: <b>{Math.round(s.recipeScore * 100)}% </b>
+                Ingredients Score: <b>{Math.round(s.ingredientScore * 100)}%</b>
              </div>
           </li>
         ))}

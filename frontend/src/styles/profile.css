@@ -1,0 +1,19 @@
+.recs-button {
+  background-color: rgb(158, 217, 239);
+  color: black;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid black;
+}
+
+.recs-button:hover {
+  background-color: rgb(132, 207, 235);
+}
+
+.logout {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid black;
+}

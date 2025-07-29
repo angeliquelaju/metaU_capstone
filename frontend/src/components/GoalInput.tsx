@@ -3,22 +3,22 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 export default function GoalInput({ goals, setGoals }: any) {
   return (
     <>
-      <h4>set weekly goals:</h4>
-      calories:
+      <h4>Set Weekly Goals:</h4>
+      Calories:
       <input
         type="number"
         value={goals.calories}
         onChange={(e) => setGoals({ ...goals, calories: +e.target.value })}
         placeholder="weekly calories"
       />
-      protein:
+      Protein:
       <input
         type="number"
         value={goals.protein}
         onChange={(e) => setGoals({ ...goals, protein: +e.target.value })}
         placeholder="weekly protein"
       />
-      carbs:
+      Carbohydrates:
       <input
         type="number"
         value={goals.carbs}
@@ -36,7 +36,7 @@ export default function GoalInput({ goals, setGoals }: any) {
           });
         }}
       >
-        save goals
+        Save Goals
       </button>
     </>
   );

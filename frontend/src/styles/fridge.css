@@ -116,6 +116,10 @@
   background-color: #f3f3f3;
 }
 
+.recipe-button {
+  margin-left: 10px;
+}
+
 /*ingredients*/
 .chicken img,
 .beef img,

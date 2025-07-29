@@ -58,7 +58,7 @@ const RecipeCard: React.FC<Props> = ({
             {recipe.missedIngredients.map((i: any) => i.name).join(", ")}
           </p>
         ) : (
-          <p className="missing-ingredients">you have all the ingredients</p>
+          <p className="missing-ingredients">You have all the ingredients</p>
         )
       ) : null}
 
@@ -66,7 +66,7 @@ const RecipeCard: React.FC<Props> = ({
         className="view-button"
         onClick={() => navigate(`/recipes/${recipe.id}`)}
       >
-        view recipe
+        View Recipe
       </button>
       {isSaved ? (
         <button className="unsave-button" onClick={onUnsave}>

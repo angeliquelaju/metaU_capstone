@@ -25,7 +25,7 @@ const FilterModal: React.FC<Props> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h3>filter recipes</h3>
+        <h3>Filter Recipes</h3>
 
         <input
           type="number"
@@ -84,7 +84,7 @@ const FilterModal: React.FC<Props> = ({
           }
         />
         <div className="modal-buttons">
-          <button onClick={onApply}>apply filters</button>
+          <button onClick={onApply}>Apply Filters</button>
           <button className="close-button" onClick={onClose}>
             cancel
           </button>

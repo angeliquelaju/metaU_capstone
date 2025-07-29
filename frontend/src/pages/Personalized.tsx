@@ -59,10 +59,10 @@ const Personalized = () => {
 
   return (
     <div className="recipe-container">
-      <h2>recommended for you</h2>
+      <h2>Recommended for you</h2>
       <div className="recipe-grid">
         {recipes.length === 0 ? (
-          <p>no recs available</p>
+          <p>No recommendations available</p>
         ) : (
           recipes.map((recipe: any) => {
             const isSaved = savedIds.has(recipe.id.toString());

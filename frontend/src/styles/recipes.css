@@ -40,8 +40,8 @@
 }
 
 .view-button {
-  background-color: #4caf50;
-  color: white;
+  background-color: rgb(158, 217, 239);
+  color: black;
   border: none;
   padding: 8px 16px;
   border-radius: 5px;
@@ -50,7 +50,7 @@
 }
 
 .view-button:hover {
-  background-color: #388e3c;
+  background-color: rgb(132, 207, 235);
 }
 
 .more-recipes-container {

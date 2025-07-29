@@ -39,20 +39,20 @@ const Recomended = () => {
 
   if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
-  if (recipes.length === 0) return <p>no recommended recipes found</p>;
+  if (recipes.length === 0) return <p>No recommended recipes found</p>;
 
   return (
     <div className="container">
       <button className="back" onClick={() => navigate(-1)}>
-        back
+        Back
       </button>
-      <h3>recommended for you based on user suggested</h3>
+      <h3>Recommended for you based on user suggested</h3>
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
-        <p>error: {error}</p>
+        <p>Error: {error}</p>
       ) : recipes.length === 0 ? (
-        <p>no recommendations found</p>
+        <p>No recommendations found</p>
       ) : (
         <div className="recipe-grid">
           {recipes.map((recipe) => {
@@ -72,7 +72,7 @@ const Recomended = () => {
                   showIngredientMatch={false}
                 />
                 {typeof recipe.score === "number" && (
-                  <p>match score: {recipe.score}%</p>
+                  <p>Match score: {recipe.score}%</p>
                 )}
               </div>
             );

@@ -44,7 +44,7 @@ function Register() {
         {message && <p className="error">{message}</p>}
       </form>
       <p>already have an account?</p>
-      <button onClick={() => navigate("/login")}>login</button>
+      <button onClick={() => navigate("/login")}>Login</button>
     </div>
   );
 }

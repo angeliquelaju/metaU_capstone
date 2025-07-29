@@ -3,17 +3,11 @@ import { useIngredients } from "../context/IngredientContext.tsx";
 import "../styles/fridge.css";
 
 const pantryItems = [
-  { name: "garlic", src: "/garlic.png", className: "garlic" },
-  {
-    name: "salt",
-    src: "/salt.png",
-    className: "salt",
-  },
-  {
-    name: "pepper",
-    src: "/pepper.png",
-    className: "pepper",
-  },
+  { name: "salt", src: "/salt.png", className: "salt" },
+  { name: "pepper", src: "/pepper.png", className: "pepper" },
+  { name: "flour", src: "/flour.png", className: "flour" },
+  { name: "sugar", src: "/sugar.png", className: "sugar" },
+  { name: "oil", src: "/oil.png", className: "oil" }
 ];
 
 const PantryView = () => {
@@ -60,11 +54,12 @@ const PantryView = () => {
         <button
           className="fridge-button"
           onClick={() => navigate("/fridge-view")}
-        >fridge</button>
-        <button
-          className="recipe-button"
-          onClick={() => navigate("/recipes")}
-        >generate recipe</button>
+        >
+          fridge
+        </button>
+        <button className="recipe-button" onClick={() => navigate("/recipes")}>
+          generate recipe
+        </button>
       </div>
     </div>
   );

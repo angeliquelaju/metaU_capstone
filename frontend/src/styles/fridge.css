@@ -209,8 +209,9 @@
 }
 
 .cucumber {
-  top: 40%;
+  top: 40.5%;
   left: 51%;
+  transform: rotate(20deg);
 }
 
 .corn {

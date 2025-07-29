@@ -16,15 +16,15 @@ export default function CalendarView({
       {nutrition && (
         <div className="nutrition-overview">
           <h3>Weekly Nutrition</h3>
-          <p>
+          <p className="weekly-nutrition">
             Calories: {Math.round(nutrition.weekly.calories)} / {goals.calories}
             {nutrition.weekly.calories >= goals.calories ? " Met Goals ✅" : " Did not Meet Goals ❌"}
           </p>
-          <p>
+          <p className="weekly-nutrition">
             Protein: {Math.round(nutrition.weekly.protein)} / {goals.protein}
             {nutrition.weekly.protein >= goals.protein ? " Met Goals ✅" : " Did not Meet Goals ❌"}
           </p>
-          <p>
+          <p className="weekly-nutrition">
             Carbohydrates: {Math.round(nutrition.weekly.carbs)} / {goals.carbs}
             {nutrition.weekly.carbs >= goals.carbs ? " Met Goals ✅" : " Did not Meet Goals ❌"}
           </p>
@@ -60,13 +60,13 @@ export default function CalendarView({
           </div>
         ))}
       </div>
-      <button className = "generate-ICS" onClick = {() => {
+      <button className = "export-ICS" onClick = {() => {
         const link = document.createElement("a");
         link.href = `${backendURL}/export/ics`;
         link.download = "meal-plan.ics";
         link.click();
       }}>Export to Calendar</button>
-      <button onClick={() => setShowPlanner(true)}>Generate New Plan</button>
+      <button className = "generate-plan"onClick={() => setShowPlanner(true)}>Generate New Plan</button>
     </>
   );
 }

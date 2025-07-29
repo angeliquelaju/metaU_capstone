@@ -59,8 +59,8 @@
 }
 
 .more-recipes-button {
-  background-color: #4caf50;
-  color: white;
+  background-color: #a0b8fc;
+  color: black;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
@@ -70,7 +70,7 @@
 }
 
 .more-recipes-button:hover {
-  background-color: #388e3c;
+  background-color: #86a5fc;
 }
 
 .unsave-button,

@@ -56,8 +56,50 @@
   margin-left: 10px;
 }
 
-.generate-ICS {
-  margin-top: 5px;
+.export-ICS {
+  margin-top: 25px;
   margin-left: 5px;
   margin-right: 10px;
+  background-color: rgb(251, 235, 129);
+  color: black;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.export-ICS:hover{
+  background-color: rgb(228, 212, 105);
+}
+
+.generate-plan {
+  background-color: #a0b8fc;
+  color: black;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.generate-plan:hover{
+  background-color: #8fa6e6;
+}
+
+
+.weekly-nutrition {
+  margin-top: -10px;
+}
+
+.set-goals {
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.goal-input {
+  margin-right: 15px;
+  margin-left: 5px;
 }

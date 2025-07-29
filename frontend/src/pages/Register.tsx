@@ -32,18 +32,18 @@ function Register() {
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="username"
+          placeholder="Username"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="password"
+          placeholder="Password"
         />
         <button type="submit">Register</button>
         {message && <p className="error">{message}</p>}
       </form>
-      <p>already have an account?</p>
+      <p>Already have an account?</p>
       <button onClick={() => navigate("/login")}>Login</button>
     </div>
   );

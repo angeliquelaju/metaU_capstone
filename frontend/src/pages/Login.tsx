@@ -37,13 +37,13 @@ function Login({ setUser }: { setUser: (name: string) => void }) {
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="username"
+          placeholder="Username"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="password"
+          placeholder="Password"
         />
         <button type="submit">Login</button>
         {error && <p className="error">{error}</p>}

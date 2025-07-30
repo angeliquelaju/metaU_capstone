@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
+import "../styles/profile.css";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface Suggestion {
@@ -35,11 +36,11 @@ const FriendSuggestion: React.FunctionComponent = () => {
   }, []);
   if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
-  if (suggestions.length === 0) return <p>No Similar Users Found</p>;
+  if (suggestions.length === 0) return <p>No similar users found</p>;
 
   return (
     <div className="suggestions">
-      <h3>Suggested Users</h3>
+      <h3 className = "suggested-users">Suggested Users</h3>
       <ul>
         {suggestions.map((s) => (
           <li key={s.id}>

@@ -47,6 +47,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-right: 10px;
 }
 
 .view-button:hover {
@@ -96,4 +97,13 @@
 
 .filters-button:hover {
   background-color: #e2ad7c;
+}
+
+.unsave-button,
+.save-button,
+.like-button,
+.unlike-button,
+.view-button {
+  display: inline-flex;
+  vertical-align: middle;
 }

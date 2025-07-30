@@ -1,4 +1,5 @@
 .recs-button {
+  margin-left: 16px;
   background-color: rgb(158, 217, 239);
   color: black;
   padding: 8px 16px;
@@ -16,4 +17,23 @@
   padding: 5px 10px;
   border-radius: 5px;
   border: 1px solid black;
+}
+
+.saved-recipes {
+  margin-top: 30px;
+  margin-bottom: 0px;
+  margin-left: 16px;
+}
+
+.suggested-users {
+  margin-top: 30px;
+  margin-bottom: -10px;
+  margin-left: 16px;
+}
+
+.logout {
+  display: flex;
+  justify-content: center;
+  border: 0;
+  margin-top: -10px;
 }

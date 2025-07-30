@@ -56,8 +56,10 @@ function Profile({
   return (
     <div className="container">
       <h2>Welcome, {user}</h2>
-      <button className = "logout" onClick={handleLogout}>Log Out</button>
-      <h3>Saved Recipes</h3>
+      <div className="logout">
+        <button onClick={handleLogout}>Log Out</button>
+      </div>
+      <h3 className = "saved-recipes">Saved Recipes</h3>
       {loading ? (
         <LoadingSpinner />
       ) : error ? (

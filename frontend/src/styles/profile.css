@@ -7,16 +7,11 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   border: 1px solid black;
+  font-size: 14px;
 }
 
 .recs-button:hover {
   background-color: rgb(132, 207, 235);
-}
-
-.logout {
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid black;
 }
 
 .saved-recipes {
@@ -36,4 +31,62 @@
   justify-content: center;
   border: 0;
   margin-top: -10px;
+}
+
+.logout-button {
+  font-size: 15px;
+  margin-top: -5px;
+  padding: 3px 10px;
+}
+
+.user-list {
+  display: flex;
+  gap: 16px;
+  margin: 20px 16px;
+}
+
+.users {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: 0.2s ease;  
+}
+
+.users:hover {
+  transform: translateY(-2px);
+}
+
+.user-pic {
+  width: 35px;
+  margin-right: 16px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 17px;
+  color: #2b5ac0;
+  text-decoration: none;
+}
+
+.username:hover {
+  text-decoration: underline;
+}
+
+.match-score {
+  font-size: 15px;
+  color: #333;
+  margin: 4px 0;
+}
+
+.score-details {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
 }

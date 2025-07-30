@@ -40,21 +40,26 @@ const FriendSuggestion: React.FunctionComponent = () => {
 
   return (
     <div className="suggestions">
-      <h3 className = "suggested-users">Suggested Users</h3>
-      <ul>
+      <h3 className="suggested-users">Suggested Users</h3>
+      <div className="user-list">
         {suggestions.map((s) => (
-          <li key={s.id}>
-            <Link to={`/user/${s.username}`}>
-              <strong>{s.username}</strong>
-            </Link>
-             - <b>{Math.round(s.similarity * 100)}% match</b>
-             <div className="score-details">
+          <div key={s.id} className="users">
+            <img src="/default.png" alt="profile" className="user-pic" />
+            <div className="user-info">
+              <Link className="username" to={`/user/${s.username}`}>
+                <strong>{s.username}</strong>
+              </Link>
+              <p className="match-score">
+                <b>{Math.round(s.similarity * 100)}% match</b>
+              </p>
+              <p className="score-details">
                 Recipes Score: <b>{Math.round(s.recipeScore * 100)}% </b>
                 Ingredients Score: <b>{Math.round(s.ingredientScore * 100)}%</b>
-             </div>
-          </li>
+              </p>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

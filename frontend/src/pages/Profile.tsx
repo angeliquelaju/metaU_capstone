@@ -57,7 +57,7 @@ function Profile({
     <div className="container">
       <h2>Welcome, {user}</h2>
       <div className="logout">
-        <button onClick={handleLogout}>Log Out</button>
+        <button className="logout-button" onClick={handleLogout}>Log Out</button>
       </div>
       <h3 className = "saved-recipes">Saved Recipes</h3>
       {loading ? (
@@ -92,7 +92,7 @@ function Profile({
       <button
           className = "recs-button"
           onClick={() => navigate("/recommended")}
-        >Recommended recipes based on the suggested users</button>
+        >Recommendations based on suggested users</button>
     </div>
   );
 }

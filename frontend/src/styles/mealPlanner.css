@@ -73,7 +73,7 @@
   margin-top: 25px;
   margin-left: 5px;
   margin-right: 10px;
-  background-color: rgb(251, 235, 129);
+  background-color: #fbeb81;
   color: black;
   border: none;
   padding: 8px 15px;
@@ -84,7 +84,7 @@
 }
 
 .export-ICS:hover{
-  background-color: rgb(228, 212, 105);
+  background-color: #e4d469;
 }
 
 .generate-plan {

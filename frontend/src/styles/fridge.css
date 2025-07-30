@@ -118,6 +118,48 @@
 
 .recipe-button {
   margin-left: 10px;
+  background-color: #b7ecb7;
+  color: black;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.recipe-button:hover{
+  background-color: #a4d7a4;
+}
+
+.pantry-button {
+  background-color: #fbeb81;
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pantry-button:hover{
+  background-color: #e4d469;
+}
+
+.fridge-button {
+  background-color: #9fdeeb;
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.fridge-button:hover {
+  background-color: #93ceda;
 }
 
 /*ingredients*/

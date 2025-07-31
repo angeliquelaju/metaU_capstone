@@ -27,13 +27,13 @@ router.get("/export/ics", requireAuth, async (req, res) => {
     startDate.setDate(today.getDate() + daysUntilMon);
     startDate.setHours(0, 0, 0, 0);
     const DAYS = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
     ];
     const events: EventAttributes[] = [];
     for (const entry of plan.plan as any[]) {

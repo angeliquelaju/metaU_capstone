@@ -88,13 +88,7 @@ export function mealPlanData() {
         }
         setLoading(false);
       } catch (error: any) {
-        console.error("error loading saved recipes or plan: ", error);
-        if (
-          error.response?.status === 401 ||
-          error.message?.includes("please log in")
-        ) {
-          setMessage("please log in to use the meal planner");
-        }
+        setMessage("please log in to use the meal planner");
         setPlan(null);
         setLoading(false);
       }

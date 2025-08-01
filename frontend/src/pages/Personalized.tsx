@@ -30,20 +30,22 @@ const Personalized = () => {
         const res = await fetch(`${backendURL}/recipes/personalized`, {
           credentials: "include",
         });
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(
-            errData.error || "failed to fetch personalized recipes"
-          );
-        }
-
         const data = await res.json();
+        if (!res.ok) {
+          const message = data?.error?.toLowerCase?.();
+          if (res.status === 401) {
+            setError("please log in to see recommended recipes");
+          } else if (message?.includes("no liked recipes")) {
+            setError("please like some recipes")
+          }
+          return;
+        }
         setRecipes(data);
       } catch (err: any) {
         if (err.message === "please log in") {
-          setError("please log in to see personalized recipes");
+          setError("please log in to see recommended recipes");
         } else {
-          setError("something went wrong");
+          setError("something went wrong")
         }
       } finally {
         setLoading(false);
@@ -53,9 +55,7 @@ const Personalized = () => {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <p>error: {error}</p>;
-  if (error === "please log in to see personalized recipes")
-    return <p>{error}</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="recipe-container">

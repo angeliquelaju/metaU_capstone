@@ -7,6 +7,19 @@ const fridgeItems = [
   { name: "tomato", src: "/tomato.png", className: "tomato" },
   { name: "onion", src: "/onion.png", className: "onion" },
   { name: "lemon", src: "/lemon.png", className: "lemon" },
+  { name: "garlic", src: "/garlic.png", className: "garlic" },
+  { name: "avocado", src: "/avocado.png", className: "avocado" },
+  { name: "beef", src: "/beef.png", className: "beef" },
+  { name: "butter", src: "/butter.png", className: "butter" },
+  { name: "carrot", src: "/carrot.png", className: "carrot" },
+  { name: "corn", src: "/corn.png", className: "corn" },
+  { name: "cucumber", src: "/cucumber.png", className: "cucumber" },
+  { name: "ginger", src: "/ginger.png", className: "ginger" },
+  { name: "milk", src: "/milk.png", className: "milk" },
+  { name: "mushroom", src: "/mushroom.png", className: "mushroom" },
+  { name: "potato", src: "/potato.png", className: "potato" }, 
+  { name: "salmon", src: "/salmon.png", className: "salmon" }, 
+  { name: "yogurt", src: "/yogurt.png", className: "yogurt" }, 
 ];
 
 const FridgeView = () => {

@@ -17,14 +17,14 @@
   top: 25%;
   left: 31.5%;
   width: 17%;
-  height: 65%;
+  height: 63%;
 }
 
 .pantry-area {
-  bottom: 12%;
+  bottom: 15%;
   right: 40.5%;
   width: 9%;
-  height: 20%;
+  height: 18%;
 }
 
 .fridge-area:hover,
@@ -117,79 +117,165 @@
 }
 
 /*ingredients*/
-.chicken img {
+.chicken img,
+.beef img,
+.salmon img {
   width: 100px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.lemon img,
+.tomato img,
+.onion img,
+.cucumber img,
+.butter img,
+.avocado img,
+.flour img,
+.potato img,
+.sugar img,
+.sugar-jar img {
+  width: 60px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.garlic img,
+.yogurt img,
+.mushroom img,
+.milk img {
+  width: 52px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.ginger img, .oil img {
+  width: 45px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.salt img,
+.pepper img {
+  width: 40px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.corn img,
+.carrot img {
+  width: 85px;
   height: auto;
   transition: transform 0.2s;
 }
 
 .chicken {
   bottom: 13%;
-  left: 33%;
-}
-
-.tomato img {
-  width: 80px;
-  height: auto;
-  transition: transform 0.2s;
-}
-
-.tomato {
-  bottom: 41%;
-  left: 40%;
-}
-
-.onion img {
-  width: 75px;
-  height: auto;
-  transition: transform 0.2s;
-}
-
-.onion {
-  top: 49%;
   left: 31%;
 }
 
-.lemon img {
-  width: 80px;
-  height: auto;
-  transition: transform 0.2s;
+.tomato {
+  top: 40%;
+  left: 37%;
+}
+
+.onion {
+  top: 39.5%;
+  left: 30%;
 }
 
 .lemon {
-  bottom: 40.5%;
-  left: 50%;
-}
-
-.garlic img {
-  width: 80px;
-  height: auto;
-  transition: transform 0.2s;
+  top: 41%;
+  left: 44%;
 }
 
 .garlic {
-  bottom: 40%;
-  left: 41%;
-}
-
-.salt img {
-  width: 50px;
-  height: auto;
-  transition: transform 0.2s;
+  bottom: 29%;
+  left: 44.5%;
 }
 
 .salt {
   bottom: 40%;
-  left: 33%;
-}
-
-.pepper img {
-  width: 50px;
-  height: auto;
-  transition: transform 0.2s;
+  left: 32%;
 }
 
 .pepper {
   bottom: 40%;
   left: 27%;
+}
+
+.cucumber {
+  top: 40%;
+  left: 51%;
+}
+
+.corn {
+  bottom: 29%;
+  left: 28%;
+}
+
+.carrot {
+  top: 41.5%;
+  left: 58%;
+}
+
+.butter {
+  bottom: 41%;
+  left: 31%;
+  transform: rotate(-4deg);
+}
+
+.beef {
+  bottom: 13%;
+  left: 43%;
+}
+
+.avocado {
+  bottom: 29%;
+  left: 38%;
+}
+
+.flour {
+  bottom: 24.5%;
+  left: 25%;
+}
+
+.yogurt {
+  bottom: 41%;
+  left: 39%;
+}
+
+.salmon {
+  bottom: 13%;
+  left: 55%;
+}
+
+.potato {
+  bottom: 29%;
+  left: 64%;
+}
+
+.mushroom {
+  bottom: 29%;
+  left: 57%;
+}
+
+.milk {
+  bottom: 41%;
+  left: 47%;
+}
+
+.ginger {
+  bottom: 29%;
+  left: 51%;
+}
+
+.sugar {
+  bottom: 24.5%;
+  left: 34%;
+}
+
+.oil {
+  bottom: 23%;
+  left: 42%;
 }

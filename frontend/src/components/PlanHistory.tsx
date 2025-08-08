@@ -7,13 +7,13 @@ type Props = {
 };
 
 const DAYS = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
 
 export default function PlanHistory({
@@ -78,12 +78,12 @@ export default function PlanHistory({
 
   return (
     <>
-      <h4>use previous plan</h4>
+      <h4>Use Previous Plan</h4>
       <select onChange={handlePlanHistory}>
-        <option value="">pick a previous plan</option>
+        <option value="">Pick a Previous Plan</option>
         {planHistory.map((p) => (
           <option key={p.id} value={p.id}>
-            created at {new Date(p.weekStart).toLocaleDateString()}
+            Created at {new Date(p.weekStart).toLocaleDateString()}
           </option>
         ))}
       </select>
@@ -100,7 +100,7 @@ export default function PlanHistory({
           );
         }}
       >
-        clear
+        Clear
       </button>
     </>
   );

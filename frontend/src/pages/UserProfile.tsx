@@ -44,7 +44,7 @@ const UserProfile = () => {
       <button className="back" onClick={() => navigate(-1)}>
         back
       </button>
-      <h2>{username}'s saved recipes</h2>
+      <h2>{username}'s Saved Recipes</h2>
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
@@ -67,7 +67,7 @@ const UserProfile = () => {
                   showNutrition={false}
                   showIngredientMatch={false}
                 />
-                {isSaved && <p className="also-saved">also saved by you</p>}
+                {isSaved && <p className="also-saved">Also saved by you</p>}
               </div>
             );
           })}

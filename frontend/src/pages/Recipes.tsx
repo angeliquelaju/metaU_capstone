@@ -91,7 +91,7 @@ const Recipes = () => {
   };
 
   if (selected.length === 0) {
-    return <p>please go to the Kitchen page and select ingredients</p>;
+    return <p>Please go to the Kitchen page and select ingredients</p>;
   }
   if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
@@ -100,7 +100,7 @@ const Recipes = () => {
     <div className="recipe-container">
       <h2>Recipes Based on Ingredients Selected</h2>
 
-      <button onClick={() => setShowModal(true)}>filter</button>
+      <button className = "filters-button" onClick={() => setShowModal(true)}>Filters</button>
       {showModal && (
         <FilterModal
           filters={filters}

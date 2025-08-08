@@ -30,7 +30,7 @@ export default function MealPlanner() {
 
   return (
     <div>
-      <h2>meal planner</h2>
+      <h2>Meal Planner</h2>
       {plan && !showPlanner ? (
         <CalendarView
           plan={plan}

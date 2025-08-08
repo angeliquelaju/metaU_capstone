@@ -40,17 +40,18 @@
 }
 
 .view-button {
-  background-color: #4caf50;
-  color: white;
+  background-color: rgb(158, 217, 239);
+  color: black;
   border: none;
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-right: 10px;
 }
 
 .view-button:hover {
-  background-color: #388e3c;
+  background-color: rgb(132, 207, 235);
 }
 
 .more-recipes-container {
@@ -59,8 +60,8 @@
 }
 
 .more-recipes-button {
-  background-color: #4caf50;
-  color: white;
+  background-color: #a0b8fc;
+  color: black;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
@@ -70,7 +71,7 @@
 }
 
 .more-recipes-button:hover {
-  background-color: #388e3c;
+  background-color: #86a5fc;
 }
 
 .unsave-button,
@@ -80,4 +81,29 @@
   background: transparent;
   border: 0px;
   font-size: 20px;
+}
+
+.filters-button {
+  margin-left: 20px;
+  background-color: #fcc999;
+  color: black;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filters-button:hover {
+  background-color: #e2ad7c;
+}
+
+.unsave-button,
+.save-button,
+.like-button,
+.unlike-button,
+.view-button {
+  display: inline-flex;
+  vertical-align: middle;
 }

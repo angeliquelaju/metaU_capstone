@@ -1,29 +1,33 @@
+import "../styles/mealPlanner.css";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function GoalInput({ goals, setGoals }: any) {
   return (
     <>
-      <h4>set weekly goals:</h4>
-      calories:
+      <h4 className = "set-goals">Set Weekly Goals:</h4>
+      Calories:
       <input
         type="number"
         value={goals.calories}
         onChange={(e) => setGoals({ ...goals, calories: +e.target.value })}
         placeholder="weekly calories"
+        className="goal-input"
       />
-      protein:
+      Protein:
       <input
         type="number"
         value={goals.protein}
         onChange={(e) => setGoals({ ...goals, protein: +e.target.value })}
         placeholder="weekly protein"
+        className="goal-input"
       />
-      carbs:
+      Carbohydrates:
       <input
         type="number"
         value={goals.carbs}
         onChange={(e) => setGoals({ ...goals, carbs: +e.target.value })}
         placeholder="weekly carbs"
+        className="goal-input"
       />
       <button
         className="saveGoals-button"
@@ -36,7 +40,7 @@ export default function GoalInput({ goals, setGoals }: any) {
           });
         }}
       >
-        save goals
+        Save Goals
       </button>
     </>
   );

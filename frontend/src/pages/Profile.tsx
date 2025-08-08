@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 import FriendSuggestion from "../components/FriendSuggestion";
 import RecipeCard from "../components/RecipeCard";
-import { likeNSaveRecipes } from "../hooks/likeNSaveRecipes";
 import LoadingSpinner from "../components/LoadingSpinner";
+import "../styles/profile.css";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function Profile({
@@ -54,15 +55,17 @@ function Profile({
 
   return (
     <div className="container">
-      <h2>welcome, {user}</h2>
-      <button onClick={handleLogout}>log out</button>
-      <h3>saved recipes</h3>
+      <h2>Welcome, {user}</h2>
+      <div className="logout">
+        <button className="logout-button" onClick={handleLogout}>Log Out</button>
+      </div>
+      <h3 className = "saved-recipes">Saved Recipes</h3>
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
-        <p>error: {error}</p>
+        <p>Error: {error}</p>
       ) : saved.length === 0 ? (
-        <p>no recipes have been saved</p>
+        <p>No recipes have been saved</p>
       ) : (
         <div className="recipe-grid">
           {saved.map((recipe) => {
@@ -87,8 +90,9 @@ function Profile({
       )}
       <FriendSuggestion />
       <button
+          className = "recs-button"
           onClick={() => navigate("/recommended")}
-        >click here to see your recommended recipes based on the suggested users</button>
+        >Recommendations based on suggested users</button>
     </div>
   );
 }

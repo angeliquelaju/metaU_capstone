@@ -1,11 +1,11 @@
 const DAYS = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
 
 type Props = {
@@ -26,7 +26,7 @@ export default function MakeMealPlan({
 }: Props) {
   return (
     <div>
-      <h3>meals per day</h3>
+      <h3>Meals Per Day</h3>
       {DAYS.map((day) => (
         <div key={day}>
           {day}:
@@ -42,9 +42,9 @@ export default function MakeMealPlan({
         </div>
       ))}
 
-      <h3>recipe preferences</h3>
+      <h3>Recipe Preferences</h3>
       {recipePreferences.length === 0 ? (
-        <p>no saved recipes</p>
+        <p>No Saved Recipes</p>
       ) : (
         recipePreferences.map((r: any, i: number) => (
           <div key={r.spoonacularId}>
@@ -64,7 +64,7 @@ export default function MakeMealPlan({
           </div>
         ))
       )}
-      <button onClick={handleGenerate}>generate meal plan</button>
+      <button onClick={handleGenerate}>Generate Meal Plan</button>
     </div>
   );
 }

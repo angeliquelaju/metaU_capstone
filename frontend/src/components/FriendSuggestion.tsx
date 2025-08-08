@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
+import "../styles/profile.css";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface Suggestion {
@@ -35,25 +36,30 @@ const FriendSuggestion: React.FunctionComponent = () => {
   }, []);
   if (loading) return <LoadingSpinner />;
   if (error) return <p>error: {error}</p>;
-  if (suggestions.length === 0) return <p>no similar users found</p>;
+  if (suggestions.length === 0) return <p>No similar users found</p>;
 
   return (
     <div className="suggestions">
-      <h3>suggested users</h3>
-      <ul>
+      <h3 className="suggested-users">Suggested Users</h3>
+      <div className="user-list">
         {suggestions.map((s) => (
-          <li key={s.id}>
-            <Link to={`/user/${s.username}`}>
-              <strong>{s.username}</strong>
-            </Link>
-             - <b>{Math.round(s.similarity * 100)}% match</b>
-             <div className="score-details">
-                recipes: <b>{Math.round(s.recipeScore * 100)}% </b>
-                ingredients: <b>{Math.round(s.ingredientScore * 100)}%</b>
-             </div>
-          </li>
+          <div key={s.id} className="users">
+            <img src="/default.png" alt="profile" className="user-pic" />
+            <div className="user-info">
+              <Link className="username" to={`/user/${s.username}`}>
+                <strong>{s.username}</strong>
+              </Link>
+              <p className="match-score">
+                <b>{Math.round(s.similarity * 100)}% match</b>
+              </p>
+              <p className="score-details">
+                Recipes Score: <b>{Math.round(s.recipeScore * 100)}% </b>
+                Ingredients Score: <b>{Math.round(s.ingredientScore * 100)}%</b>
+              </p>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

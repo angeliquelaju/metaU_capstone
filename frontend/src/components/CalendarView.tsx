@@ -15,18 +15,18 @@ export default function CalendarView({
     <>
       {nutrition && (
         <div className="nutrition-overview">
-          <h3>weekly nutrition</h3>
-          <p>
-            calories: {Math.round(nutrition.weekly.calories)} / {goals.calories}
-            {nutrition.weekly.calories >= goals.calories ? " yes ✅" : " no ❌"}
+          <h3>Weekly Nutrition</h3>
+          <p className="weekly-nutrition">
+            Calories: {Math.round(nutrition.weekly.calories)} / {goals.calories}
+            {nutrition.weekly.calories >= goals.calories ? " Met Goals ✅" : " Did not Meet Goals ❌"}
           </p>
-          <p>
-            protein: {Math.round(nutrition.weekly.protein)} / {goals.protein}
-            {nutrition.weekly.protein >= goals.protein ? " yes ✅" : " no ❌"}
+          <p className="weekly-nutrition">
+            Protein: {Math.round(nutrition.weekly.protein)} / {goals.protein}
+            {nutrition.weekly.protein >= goals.protein ? " Met Goals ✅" : " Did not Meet Goals ❌"}
           </p>
-          <p>
-            carbs: {Math.round(nutrition.weekly.carbs)} / {goals.carbs}
-            {nutrition.weekly.carbs >= goals.carbs ? " yes ✅" : " no ❌"}
+          <p className="weekly-nutrition">
+            Carbohydrates: {Math.round(nutrition.weekly.carbs)} / {goals.carbs}
+            {nutrition.weekly.carbs >= goals.carbs ? " Met Goals ✅" : " Did not Meet Goals ❌"}
           </p>
           <GoalInput goals={goals} setGoals={setGoals} />
         </div>
@@ -60,13 +60,13 @@ export default function CalendarView({
           </div>
         ))}
       </div>
-      <button onClick = {() => {
+      <button className = "export-ICS" onClick = {() => {
         const link = document.createElement("a");
         link.href = `${backendURL}/export/ics`;
         link.download = "meal-plan.ics";
         link.click();
-      }}>export to calendar</button>
-      <button onClick={() => setShowPlanner(true)}>generate new plan</button>
+      }}>Export to Calendar</button>
+      <button className = "generate-plan"onClick={() => setShowPlanner(true)}>Generate New Plan</button>
     </>
   );
 }

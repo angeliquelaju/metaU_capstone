@@ -24,6 +24,7 @@
 
 .calendar-day h3 {
   font-size: 16px;
+  margin-top: 5px;
   margin-bottom: 8px;
   color: #333;
   text-align: center;
@@ -54,4 +55,64 @@
 
 .saveGoals-button {
   margin-left: 10px;
+  background-color: #bcffbc;
+  color: black;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.saveGoals-button:hover {
+  background-color: #a4dda4;
+}
+
+.export-ICS {
+  margin-top: 25px;
+  margin-left: 5px;
+  margin-right: 10px;
+  background-color: #fbeb81;
+  color: black;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.export-ICS:hover{
+  background-color: #e4d469;
+}
+
+.generate-plan {
+  background-color: #a0b8fc;
+  color: black;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.generate-plan:hover{
+  background-color: #8fa6e6;
+}
+
+
+.weekly-nutrition {
+  margin-top: -10px;
+}
+
+.set-goals {
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.goal-input {
+  margin-right: 15px;
+  margin-left: 5px;
 }

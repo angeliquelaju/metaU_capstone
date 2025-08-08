@@ -36,14 +36,14 @@ export default function GroceryList() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error === "please log in") return <p>please log in</p>
-  if (error) return <p>error: {error}</p>;
+  if (error === "please log in") return <p>Please log in</p>
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div>
-      <h2>grocery list</h2>
+      <h2>Grocery List</h2>
       {list.length === 0 ? (
-        <p>nothing to buy</p>
+        <p>Nothing to buy</p>
       ) : (
         list.map((group) => (
           <div key={group.category}>

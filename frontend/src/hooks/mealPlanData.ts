@@ -7,13 +7,13 @@ import {
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const DAYS = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
 
 export function mealPlanData() {

@@ -6,6 +6,8 @@ Name: Find Me Recipes (FER)
 
 Deployed Site: https://metau-capstone.onrender.com
 
+Demo Video: https://drive.google.com/file/d/1jAVogAKWQXARPElS1qxC9tT8gO9dQGYz/view?usp=drive_link
+
 Features
 
 - [x] UI

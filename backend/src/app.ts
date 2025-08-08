@@ -9,7 +9,8 @@ import userGoalRoutes from "./routes/userGoals";
 import friendSuggestionRoutes from "./routes/friendSuggestion";
 import saveRoutes from "./routes/saving";
 import likeRoutes from "./routes/liking";
-import userRecipeRoutes from "./routes/userRecipes"
+import userRecipeRoutes from "./routes/userRecipes";
+import exportRoutes from "./routes/export";
 
 import dotenv from "dotenv";
 
@@ -52,5 +53,6 @@ app.use(friendSuggestionRoutes);
 app.use(likeRoutes);
 app.use(saveRoutes);
 app.use(userRecipeRoutes);
+app.use(exportRoutes);
 
 export default app;
